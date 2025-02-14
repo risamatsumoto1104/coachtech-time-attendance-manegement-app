@@ -15,26 +15,34 @@
             <div class="form-group">
                 <p class="form-label">名前</p>
                 <input class="form-input" name="name" type="text" value="{{ old('name') }}" placeholder="テスト　太郎">
-                <p class="error-message">エラーメッセージを表示する</p>
+                @error('name')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="form-group">
                 <p class="form-label">メールアドレス</p>
                 <input class="form-input" name="email" type="text" value="{{ old('email') }}"
                     placeholder="test@example.com">
-                <p class="error-message">エラーメッセージを表示する</p>
+                @error('email')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="form-group">
                 <p class="form-label">パスワード</p>
                 <input class="form-input" name="password" type="password" placeholder="パスワードを入力してください">
-                <p class="error-message">エラーメッセージを表示する</p>
+                @error('password')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="form-group">
                 <p class="form-label">パスワード確認</p>
                 <input class="form-input" name="password_confirmation" type="password" placeholder="パスワードを入力してください">
-                <p class="error-message">エラーメッセージを表示する</p>
+                @error('password_confirmation')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="form-submit">

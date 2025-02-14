@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AttendanceRequest;
 use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
@@ -31,7 +32,7 @@ class AttendanceController extends Controller
     }
 
     // 勤怠詳細画面の保存（一般ユーザー）
-    public function update(Request $request)
+    public function update(AttendanceRequest $request)
     {
         return view('attendance.update');
     }

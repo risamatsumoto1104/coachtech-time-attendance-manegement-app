@@ -34,42 +34,56 @@
                     <th class="table-label">出勤・退勤</th>
                     <td class="table-content">
                         <div class="content-wrapper">
-                            <input class="content-input" type="text" placeholder="9:00">
+                            <input class="content-input" name="clock_in" type="text" placeholder="9:00">
                             <p class="to">～</p>
-                            <input class="content-input" type="text" placeholder="20:00">
+                            <input class="content-input" name="clock_out" type="text" placeholder="20:00">
                         </div>
-                        <p class="error-message">エラーメッセージを表示する</p>
+                        @foreach (['clock_in', 'clock_out'] as $field)
+                            @error($field)
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        @endforeach
                     </td>
                 </tr>
                 <tr class="table-row">
                     <th class="table-label">休憩</th>
                     <td class="table-content">
                         <div class="content-wrapper">
-                            <input class="content-input" type="text" placeholder="12:00">
+                            <input class="content-input" name="break_start" type="text" placeholder="12:00">
                             <p class="to">～</p>
-                            <input class="content-input" type="text" placeholder="13:00">
+                            <input class="content-input" name="break_end" type="text" placeholder="13:00">
                         </div>
-                        <p class="error-message">エラーメッセージを表示する</p>
+                        @foreach (['break_start', 'break_end'] as $field)
+                            @error($field)
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        @endforeach
                     </td>
                 </tr>
                 <tr class="table-row">
                     <th class="table-label">休憩2</th>
                     <td class="table-content">
                         <div class="content-wrapper">
-                            <input class="content-input" type="text" placeholder="18:00">
+                            <input class="content-input" name="break_start" type="text" placeholder="18:00">
                             <p class="to">～</p>
-                            <input class="content-input" type="text" placeholder="18:30">
+                            <input class="content-input" name="break_end" type="text" placeholder="18:30">
                         </div>
-                        <p class="error-message">エラーメッセージを表示する</p>
+                        @foreach (['break_start', 'break_end'] as $field)
+                            @error($field)
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        @endforeach
                     </td>
                 </tr>
                 <tr class="table-row">
                     <th class="table-label">備考</th>
                     <td class="table-content">
                         <div class="content-wrapper">
-                            <textarea class="content-textarea" placeholder="修正理由を記入する"></textarea>
+                            <textarea class="content-textarea" name="remarks" placeholder="修正理由を記入する"></textarea>
                         </div>
-                        <p class="error-message">エラーメッセージを表示する</p>
+                        @error('remarks')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
                     </td>
                 </tr>
             </table>
