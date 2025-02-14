@@ -1,0 +1,50 @@
+/* デスクトップパソコンのスタイル */
+@media (min-width: 1400px) and (max-width: 1540px) {
+    .staff-container {
+        width: 900px;
+        margin: 0 auto;
+        font-family: Inter;
+    }
+
+    /* タイトル */
+    .staff-title {
+        font-size: 30px;
+        font-weight: 700;
+        border-left: solid 8px black;
+        padding-left: 20px;
+        margin: 80px 0 60px 0;
+    }
+
+    /* テーブル */
+    .staff-table {
+        width: 100%;
+        background-color: white;
+        font-size: 16px;
+        font-weight: 700;
+        color: #737373;
+        text-align: center;
+        border-radius: 10px;
+    }
+
+    /* テーブル行 */
+    .table-row-title,
+    .table-row-content {
+        height: 45px;
+        border-bottom: solid 3px #e1e1e1;
+    }
+
+    .table-label:nth-of-type(2),
+    .table-content:nth-of-type(2) {
+        width: 500px;
+    }
+
+    /* 詳細ボタン */
+    .detail-link {
+        text-decoration: none;
+        color: black;
+    }
+}
+
+/* タブレットのスタイル */
+@media (min-width: 768px) and (max-width: 850px) {
+}

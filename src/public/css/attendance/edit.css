@@ -1,0 +1,117 @@
+/* デスクトップパソコンのスタイル */
+@media (min-width: 1400px) and (max-width: 1540px) {
+    .attendance-container {
+        width: 900px;
+        margin: 0 auto;
+        font-family: Inter;
+    }
+
+    /* タイトル */
+    .attendance-title {
+        font-size: 30px;
+        font-weight: 700;
+        border-left: solid 8px black;
+        padding-left: 20px;
+        margin: 80px 0 0 0;
+    }
+
+    /* テーブル */
+    .attendance-table {
+        width: 100%;
+        background-color: white;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+        border-radius: 10px;
+        margin: 30px 0;
+    }
+
+    /* テーブル行 */
+    .table-row {
+        height: 95px;
+        border-bottom: solid 3px #e1e1e1;
+    }
+
+    /* テーブルラベル */
+    .table-label {
+        width: 190px;
+        color: #737373;
+        text-align: center;
+    }
+
+    /* テーブル内容 */
+    .table-content {
+        height: 92.5px;
+    }
+
+    .content-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* 内容 */
+    .content-year,
+    .content-date,
+    .to {
+        width: 110px;
+    }
+
+    .content-name {
+        width: 330px;
+        text-align: left;
+        padding-left: 30px;
+    }
+
+    .content-input {
+        width: 110px;
+        height: 30px;
+        padding: 0;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+        border: none;
+        border: solid 1px #e1e1e1;
+        border-radius: 4px;
+    }
+
+    /* 内容（備考） */
+    .content-textarea {
+        width: 330px;
+        height: 70px;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        border: none;
+        border: solid 1px #e1e1e1;
+        border-radius: 4px;
+    }
+
+    .form-submit {
+        text-align: right;
+    }
+
+    /* 修正ボタン */
+    .submit-button {
+        width: 130px;
+        height: 50px;
+        padding: 0;
+        border: none;
+        border-radius: 5px;
+        background-color: black;
+        color: white;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    /* エラーメッセージ */
+    .error-message {
+        display: none;
+        color: red;
+        margin: 0;
+    }
+}
+
+/* タブレットのスタイル */
+@media (min-width: 768px) and (max-width: 850px) {
+}

@@ -1,0 +1,106 @@
+/* デスクトップパソコンのスタイル */
+@media (min-width: 1400px) and (max-width: 1540px) {
+    .attendance-container {
+        text-align: center;
+        font-family: Inter;
+        width: 485px;
+        margin: 0 auto;
+    }
+
+    .attendance-group {
+        margin: 205px 0 0 0;
+    }
+
+    /* 勤務ステータス */
+    .attendance-status {
+        background-color: #c8c8c8;
+        width: 100px;
+        height: 40px;
+        margin: 0 auto;
+        border: none;
+        border-radius: 50px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #696969;
+        pointer-events: none;
+    }
+
+    /* 日付 */
+    .attendance-date {
+        font-size: 40px;
+        font-weight: 400;
+    }
+
+    /* 時間 */
+    .attendance-time {
+        font-size: 80px;
+        font-weight: 700;
+        margin: 0 0 70px;
+    }
+
+    /* 「出勤」ボタン */
+    .submit-clock-in {
+        width: 221px;
+        height: 77px;
+        border: none;
+        border-radius: 20px;
+        background-color: black;
+        font-family: Inter;
+        font-size: 32px;
+        font-weight: 700;
+        color: white;
+    }
+
+    .form-group {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* 「退勤」ボタン */
+    .submit-clock-out {
+        width: 221px;
+        height: 77px;
+        border: none;
+        border-radius: 20px;
+        background-color: black;
+        font-family: Inter;
+        font-size: 32px;
+        font-weight: 700;
+        color: white;
+    }
+
+    /* 「休憩入」ボタン */
+    .submit-break-start {
+        width: 221px;
+        height: 77px;
+        border: none;
+        border-radius: 20px;
+        background-color: white;
+        font-family: Inter;
+        font-size: 32px;
+        font-weight: 700;
+    }
+
+    /* 「休憩戻」ボタン */
+    .submit-break-end {
+        width: 221px;
+        height: 77px;
+        border: none;
+        border-radius: 20px;
+        background-color: white;
+        font-family: Inter;
+        font-size: 32px;
+        font-weight: 700;
+    }
+
+    /* お疲れ様でした */
+    .attendance-massage {
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0;
+    }
+}
+
+/* タブレットのスタイル */
+@media (min-width: 768px) and (max-width: 850px) {
+}

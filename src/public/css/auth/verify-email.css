@@ -1,0 +1,51 @@
+/* デスクトップパソコンのスタイル */
+@media (min-width: 1400px) and (max-width: 1540px) {
+    /* ヘッダー右側 */
+    .nav-list {
+        display: none;
+    }
+
+    /* body全体 */
+    .page-wrapper {
+        background-color: white;
+    }
+
+    .email-verification-container {
+        font-family: Inter;
+        text-align: center;
+    }
+
+    /* メッセージ */
+    .email-verification-message {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 15% 0 40px;
+    }
+
+    /* 認証はこちらから */
+    .guidance-button {
+        display: inline-block;
+        width: 257px;
+        height: 69px;
+        font-size: 24px;
+        font-weight: 700;
+        background-color: #d9d9d9;
+        border: none;
+        border: solid 1px black;
+        border-radius: 10px;
+        margin: 0 0 40px;
+    }
+
+    /* 認証メールを再送する */
+    .email-verification-button {
+        background-color: white;
+        border: none;
+        color: #0073cc;
+        font-size: 20px;
+        font-weight: 400;
+    }
+}
+
+/* タブレットのスタイル */
+@media (min-width: 768px) and (max-width: 850px) {
+}
