@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Http\Responses\LoginResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -53,8 +54,22 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.verify-email');
         });
 
-
         // FortifyLoginRequest を LoginRequest に置き換える。
         $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
+
+        // ログイン後のリダイレクト先を切り替える処理
+        $this->app->singleton(LoginResponse::class, function () {
+            return new class implements LoginResponse
+            {
+                public function toResponse()
+                {
+                    return redirect()->intended(auth()->user()->is_admin
+                        // 管理者ログイン後、勤怠一覧画面
+                        ? route('admin.attendance.list.index')
+                        // 一般ユーザーログイン後、勤怠登録画面
+                        : route('attendance.create'));
+                }
+            };
+        });
     }
 }

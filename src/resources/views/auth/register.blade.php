@@ -10,7 +10,7 @@
 
         <h2 class="register-title">会員登録</h2>
 
-        <form class="register-form" action="" method="POST">
+        <form class="register-form" action="{{ url('/register') }}" method="POST">
             @csrf
             <div class="form-group">
                 <p class="form-label">名前</p>

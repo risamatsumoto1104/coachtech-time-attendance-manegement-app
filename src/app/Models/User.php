@@ -45,4 +45,10 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // role カラムが「admin」なら管理者
+    public function getIsAdminAttribute()
+    {
+        return $this->role === 'admin';
+    }
 }

@@ -10,7 +10,7 @@
 
         <h2 class="login-title">管理者ログイン</h2>
 
-        <form class="login-form" action="" method="POST">
+        <form class="login-form" action="{{ route('admin.login') }}" method="POST">
             @csrf
             <div class="form-group">
                 <p class="form-label">メールアドレス</p>

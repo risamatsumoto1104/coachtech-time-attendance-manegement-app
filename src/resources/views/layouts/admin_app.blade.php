@@ -32,7 +32,7 @@
                     <a class="nav-link" href="">申請一覧</a>
                 </li>
                 <li class="nav-item">
-                    <form action="" method="post">
+                    <form action="{{ route('admin.logout') }}" method="post">
                         @csrf
                         <button class="nav-button" type="submit">ログアウト</button>
                     </form>
