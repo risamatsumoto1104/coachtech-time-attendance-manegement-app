@@ -106,7 +106,6 @@
 
     /* エラーメッセージ */
     .error-message {
-        display: none;
         color: red;
         margin: 0;
     }

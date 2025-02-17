@@ -24,10 +24,13 @@ class AttendanceRequest extends FormRequest
     public function rules()
     {
         return [
-            'clock_in' => 'required|date_format:H:i|before:clock_out',
-            'clock_out' => 'required|date_format:H:i|after:clock_in',
-            'break_start' => 'nullable|date_format:H:i|after_or_equal:clock_in|before_or_equal:clock_out',
-            'break_end' => 'nullable|date_format:H:i|after_or_equal:clock_in|before_or_equal:clock_out',
+            'clock_in' => 'required|before:clock_out',
+            'clock_out' => 'required|after:clock_in',
+
+            // 休憩開始と終了時間のバリデーションを配列として処理
+            'break_start.*' => 'nullable|after_or_equal:clock_in|before_or_equal:clock_out',
+            'break_end.*' => 'nullable|after_or_equal:clock_in|before_or_equal:clock_out',
+
             'remarks' => 'required'
         ];
     }
@@ -39,11 +42,6 @@ class AttendanceRequest extends FormRequest
             'clock_in.required' => '出勤時間を入力してください',
             'clock_out.required' => '退勤時間を入力してください',
             'remarks.required' => '備考を記入してください',
-            // HH:MM形式
-            'clock_in.date_format' => 'HH:MM形式で入力してください',
-            'clock_out.date_format' => 'HH:MM形式で入力してください',
-            'break_start.date_format' => 'HH:MM形式で入力してください',
-            'break_end.date_format' => 'HH:MM形式で入力してください',
             // 退勤時間より前
             'clock_in.before' => '出勤時間もしくは退勤時間が不適切な値です',
             // 出勤時間より後

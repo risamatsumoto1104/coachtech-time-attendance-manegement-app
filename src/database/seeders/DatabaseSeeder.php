@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
 
             // 各勤怠データに2件ずつ休憩を作成
             $attendances->each(function ($attendance) {
-                BreakTime::factory(2)->create([
+                BreakTime::factory(1)->create([
                     'user_id' => $attendance->user_id,
                     'attendance_id' => $attendance->attendance_id
                 ]);

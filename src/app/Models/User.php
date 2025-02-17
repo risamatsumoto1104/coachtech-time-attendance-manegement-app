@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Attendance;
+use App\Models\BreakTime;
+use App\Models\StampCorrectionRequest;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -50,5 +53,23 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getIsAdminAttribute()
     {
         return $this->role === 'admin';
+    }
+
+    //　主：User(1)　⇔　従：Attendance(N.0)
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'user_id');
+    }
+
+    //　主：User(1)　⇔　従：BreakTime(N.0)
+    public function breakTimes()
+    {
+        return $this->hasMany(BreakTime::class, 'user_id');
+    }
+
+    //　主：User(1)　⇔　従：StampCorrectionRequest(N.0)
+    public function stampCorrectionRequests()
+    {
+        return $this->hasMany(StampCorrectionRequest::class, 'user_id');
     }
 }

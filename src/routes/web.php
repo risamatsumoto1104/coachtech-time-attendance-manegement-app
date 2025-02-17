@@ -35,8 +35,8 @@ Route::middleware('verified_admin')->group(function () {
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.list.index');
 
     // 勤怠詳細画面
-    Route::get('/admin/attendance/1', [AdminAttendanceController::class, 'edit'])->name('admin.attendance.edit');
-    Route::post('/admin/attendance/{user_id}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
+    Route::get('/admin/attendance/{user_id}/{date}', [AdminAttendanceController::class, 'edit'])->name('admin.attendance.edit');
+    Route::patch('/admin/attendance/{user_id}/{date}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
 
     // スタッフ一覧画面
     Route::get('/admin/staff/list', [AdminStaffController::class, 'index'])->name('admin.staff.list.index');
@@ -49,7 +49,7 @@ Route::middleware('verified_admin')->group(function () {
 
     // 修正申請承認画面
     Route::get('/admin/stamp_correction_request/approve/1', [AdminRequestController::class, 'edit'])->name('admin.stamp_correction_request.approve.edit');
-    Route::post('/admin/stamp_correction_request/approve/{request_id}', [AdminRequestController::class, 'update'])->name('admin.stamp_correction_request.approve.update');
+    Route::patch('/admin/stamp_correction_request/approve/{request_id}', [AdminRequestController::class, 'update'])->name('admin.stamp_correction_request.approve.update');
 
     // ログアウト
     Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])->name('admin.logout');
@@ -66,7 +66,7 @@ Route::middleware(['guest'])->group(function () {
 
     // 勤怠詳細画面
     Route::get('/attendance/1', [AttendanceController::class, 'edit'])->name('attendance.edit');
-    Route::post('/attendance/{user_id}', [AttendanceController::class, 'update'])->name('attendance.update');
+    Route::patch('/attendance/{user_id}', [AttendanceController::class, 'update'])->name('attendance.update');
 
     // 勤怠詳細画面（承認待ち）
     Route::get('/attendance/pending/1', [AttendanceController::class, 'show'])->name('attendance.show');

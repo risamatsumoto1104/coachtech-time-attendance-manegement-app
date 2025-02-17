@@ -28,6 +28,7 @@
 
     .attendance-nav-previous,
     .attendance-nav-next {
+        display: block;
         display: flex;
         align-items: center;
         color: #737373;

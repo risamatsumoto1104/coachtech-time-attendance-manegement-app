@@ -23,9 +23,39 @@ class BreakTimeFactory extends Factory
         $breakStart = $this->faker->dateTimeBetween($clockIn, $clockOut);
         $breakEnd = $this->faker->dateTimeBetween($breakStart, $clockOut);
 
+        // 秒を切り上げる処理
+        $breakStart = $this->roundUpToNextMinute($breakStart);
+        $breakEnd = $this->roundUpToNextMinute($breakEnd);
+
         return [
             'break_start' => $breakStart,
             'break_end' => $breakEnd,
         ];
+    }
+
+    // 秒を切り上げる処理
+    private function roundUpToNextMinute($time)
+    {
+        // $timeがDateTimeオブジェクトの場合、文字列に変換
+        if ($time instanceof \DateTime) {
+            $time = $time->format('Y-m-d H:i:s');
+        }
+
+        // DateTime オブジェクトを生成
+        $dateTime = new \DateTime($time);
+
+        // 秒を切り上げて次の分にする
+        if ($dateTime->format('s') > 0) {
+            $dateTime->modify('+1 minute');
+        }
+
+        // 秒をゼロに設定
+        $dateTime->setTime(
+            $dateTime->format('H'),
+            $dateTime->format('i'),
+            0
+        );
+
+        return $dateTime;
     }
 }

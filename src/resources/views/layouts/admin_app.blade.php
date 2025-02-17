@@ -23,13 +23,13 @@
         <nav class="header-nav">
             <ul class="nav-list">
                 <li class="nav-item">
-                    <a class="nav-link" href="">勤怠一覧</a>
+                    <a class="nav-link" href="{{ route('admin.attendance.list.index') }}">勤怠一覧</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="">スタッフ一覧</a>
+                    <a class="nav-link" href="{{ route('admin.staff.list.index') }}">スタッフ一覧</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="">申請一覧</a>
+                    <a class="nav-link" href="{{ route('admin.stamp_correction_request.list.index') }}">申請一覧</a>
                 </li>
                 <li class="nav-item">
                     <form action="{{ route('admin.logout') }}" method="post">
