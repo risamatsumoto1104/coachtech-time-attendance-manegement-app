@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\BreakTimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AttendanceRequest extends FormRequest
@@ -27,9 +28,9 @@ class AttendanceRequest extends FormRequest
             'clock_in' => 'required|before:clock_out',
             'clock_out' => 'required|after:clock_in',
 
-            // 休憩開始と終了時間のバリデーションを配列として処理
-            'break_start.*' => 'nullable|after_or_equal:clock_in|before_or_equal:clock_out',
-            'break_end.*' => 'nullable|after_or_equal:clock_in|before_or_equal:clock_out',
+            // 標準バリデーションを削除して、カスタムルールを適用
+            'break_start.*' => ['nullable', new BreakTimeValidation($this->clock_in, $this->clock_out)],
+            'break_end.*' => ['nullable', new BreakTimeValidation($this->clock_in, $this->clock_out)],
 
             'remarks' => 'required'
         ];
@@ -46,12 +47,6 @@ class AttendanceRequest extends FormRequest
             'clock_in.before' => '出勤時間もしくは退勤時間が不適切な値です',
             // 出勤時間より後
             'clock_out.after' => '出勤時間もしくは退勤時間が不適切な値です',
-            // 出勤時間以降
-            'break_start.after_or_equal' => '休憩時間が勤務時間外です',
-            'break_end.after_or_equal' => '休憩時間が勤務時間外です',
-            // 退勤時間以前
-            'break_start.before_or_equal' => '休憩時間が勤務時間外です',
-            'break_end.before_or_equal' => '休憩時間が勤務時間外です',
         ];
     }
 }

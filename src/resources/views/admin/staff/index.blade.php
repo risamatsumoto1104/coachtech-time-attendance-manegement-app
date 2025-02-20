@@ -16,13 +16,16 @@
                 <th class="table-label">メールアドレス</th>
                 <th class="table-label">月次勤怠</th>
             </tr>
-            <tr class="table-row-content">
-                <td class="table-content">山田太郎</td>
-                <td class="table-content">test@example.com</td>
-                <td class="table-content">
-                    <a class="detail-link" href="">詳細</a>
-                </td>
-            </tr>
+            @foreach ($users as $user)
+                <tr class="table-row-content">
+                    <td class="table-content">{{ $user->name }}</td>
+                    <td class="table-content">{{ $user->email }}</td>
+                    <td class="table-content">
+                        <a class="detail-link"
+                            href="{{ route('admin.attendance.staff.show', ['user_id' => $user->user_id]) }}">詳細</a>
+                    </td>
+                </tr>
+            @endforeach
         </table>
     </div>
 @endsection

@@ -8,21 +8,26 @@
 @section('content')
     <div class="attendance-staff-container">
 
-        <h2 class="attendance-staff-title">テスト太郎さんの勤怠</h2>
+        <h2 class="attendance-staff-title">{{ $user ? $user->name : null }}さんの勤怠</h2>
 
         <div class="attendance-staff-nav">
-            <div class="attendance-staff-nav-previous">
+            <a class="attendance-staff-nav-previous"
+                href="{{ route('admin.attendance.staff.show', ['user_id' => $user->user_id, 'date' => date('Y-m', strtotime($currentDateYearMonth . ' -1 month'))]) }}">
                 <img class="nav-icon-previous" src="{{ asset('矢印アイコン.png') }}" alt="矢印アイコン">
                 <p class="previous-month">前月</p>
-            </div>
-            <div class="attendance-staff-nav-calendar" onclick="document.querySelector('.input-calendar').showPicker();">
+            </a>
+            <form class="attendance-staff-nav-calendar"
+                action="{{ route('admin.attendance.staff.show', ['user_id' => $user->user_id]) }}" method="GET"
+                onclick="document.querySelector('.input-calendar').showPicker();">
                 <img class="nav-icon-calendar" src="{{ asset('カレンダーアイコン.png') }}" alt="カレンダーアイコン">
-                <input class="input-calendar" type="month">
-            </div>
-            <div class="attendance-staff-nav-next">
+                <input class="input-calendar" type="month" name="month" value="{{ $currentDateYearMonth }}"
+                    onchange="this.form.submit()">
+            </form>
+            <a class="attendance-staff-nav-next"
+                href="{{ route('admin.attendance.staff.show', ['user_id' => $user->user_id, 'date' => date('Y-m', strtotime($currentDateYearMonth . ' +1 month'))]) }}">
                 <p class="next-month">翌月</p>
                 <img class="nav-icon-next" src="{{ asset('矢印アイコン.png') }}" alt="矢印アイコン">
-            </div>
+            </a>
         </div>
 
         <table class="attendance-staff-table">
@@ -34,16 +39,19 @@
                 <th class="table-label">合計</th>
                 <th class="table-label">詳細</th>
             </tr>
-            <tr class="table-row-content">
-                <td class="table-content">06/01（木）</td>
-                <td class="table-content">09:00</td>
-                <td class="table-content">18:00</td>
-                <td class="table-content">1:00</td>
-                <td class="table-content">8:00</td>
-                <td class="table-content">
-                    <a class="detail-link" href="">詳細</a>
-                </td>
-            </tr>
+            @foreach ($attendances as $attendance)
+                <tr class="table-row-content">
+                    <td class="table-content">{{ $attendance->formatted_created_at }}</td>
+                    <td class="table-content">{{ substr($attendance->clock_in ?? '', 11, 5) }}</td>
+                    <td class="table-content">{{ substr($attendance->clock_out ?? '', 11, 5) }}</td>
+                    <td class="table-content">{{ $attendance->totalBreakTime ?? '' }}</td>
+                    <td class="table-content">{{ $attendance->totalWorkTime ?? '' }}</td>
+                    <td class="table-content">
+                        <a class="detail-link"
+                            href="{{ route('admin.attendance.edit', ['user_id' => $attendance->user->user_id, 'date' => $currentDateFormatted]) }}">詳細</a>
+                    </td>
+                </tr>
+            @endforeach
         </table>
     </div>
 @endsection

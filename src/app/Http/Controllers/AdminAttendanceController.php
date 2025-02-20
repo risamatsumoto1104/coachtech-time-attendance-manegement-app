@@ -73,6 +73,9 @@ class AdminAttendanceController extends Controller
         $date = $request->route('date');
         $userId = $request->route('user_id');
 
+        // 今日の日付を設定
+        $date = now()->toDateString(); // 'Y-m-d'形式
+
         // 日付を'Y-m-d'形式で文字列にフォーマット
         $currentDate = new \DateTime($date);
         $currentDateFormatted = $currentDate->format('Y-m-d');
@@ -111,7 +114,6 @@ class AdminAttendanceController extends Controller
 
         try {
             foreach ($attendances as $attendance) {
-
                 // 勤怠データを更新
                 $attendance->update([
                     'clock_in' => $clockInDatetime,
@@ -128,7 +130,7 @@ class AdminAttendanceController extends Controller
                     if (!empty($start) && !empty($breakEnds[$index])) {
                         // 既存の休憩時間があれば更新、なければ作成
                         $breakTime = BreakTime::firstOrNew([
-                            'attendance_id' => $attendance->id,
+                            'attendance_id' => $attendance->attendance_id,
                             'break_start' => $startDatetime,
                         ]);
                         $breakTime->break_end = $endDatetime;

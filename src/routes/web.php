@@ -34,15 +34,15 @@ Route::middleware('verified_admin')->group(function () {
     // 勤怠一覧画面
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.list.index');
 
-    // 勤怠詳細画面
-    Route::get('/admin/attendance/{user_id}/{date}', [AdminAttendanceController::class, 'edit'])->name('admin.attendance.edit');
-    Route::patch('/admin/attendance/{user_id}/{date}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
-
     // スタッフ一覧画面
     Route::get('/admin/staff/list', [AdminStaffController::class, 'index'])->name('admin.staff.list.index');
 
     // スタッフ別勤怠一覧画面
-    Route::get('/admin/attendance/staff/1', [AdminStaffController::class, 'show'])->name('admin.attendance.staff.show');
+    Route::get('/admin/attendance/staff/{user_id}', [AdminStaffController::class, 'show'])->name('admin.attendance.staff.show');
+
+    // 勤怠詳細画面
+    Route::get('/admin/attendance/{user_id}/{date}', [AdminAttendanceController::class, 'edit'])->name('admin.attendance.edit');
+    Route::patch('/admin/attendance/{user_id}/{date}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
 
     // 申請一覧画面
     Route::get('/admin/stamp_correction_request/list', [AdminRequestController::class, 'index'])->name('admin.stamp_correction_request.list.index');
