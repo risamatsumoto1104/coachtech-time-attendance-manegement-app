@@ -11,8 +11,10 @@
         <h2 class="request-title">申請一覧</h2>
 
         <div class="request-list">
-            <a class="request-pending" href="">承認待ち</a>
-            <a class="request-approval" href="">承認済み</a>
+            <a class="request-pending"
+                href="{{ route('admin.stamp_correction_request.list.index', ['tab' => 'pending']) }}">承認待ち</a>
+            <a class="request-approval"
+                href="{{ route('admin.stamp_correction_request.list.index', ['tab' => 'approved']) }}">承認済み</a>
         </div>
 
         <table class="request-table">
@@ -24,16 +26,35 @@
                 <th class="table-label">申請日時</th>
                 <th class="table-label">詳細</th>
             </tr>
-            <tr class="table-row-content">
-                <td class="table-content">認証待ち</td>
-                <td class="table-content">テスト太郎</td>
-                <td class="table-content">2023/06/01</td>
-                <td class="table-content">遅延のため</td>
-                <td class="table-content">2023/06/02</td>
-                <td class="table-content">
-                    <a class="detail-link" href="">詳細</a>
-                </td>
-            </tr>
+            @if ($tab === 'pending')
+                @foreach ($stampCorrectionRequests as $stampCorrectionRequest)
+                    <tr class="table-row-content">
+                        <td class="table-content">{{ $stampCorrectionRequest->status }}</td>
+                        <td class="table-content">{{ $stampCorrectionRequest->user->name }}</td>
+                        <td class="table-content">{{ $stampCorrectionRequest->attendance->created_at }}</td>
+                        <td class="table-content">{{ $stampCorrectionRequest->attendance->remarks }}</td>
+                        <td class="table-content">{{ $stampCorrectionRequest->created_at }}</td>
+                        <td class="table-content">
+                            <a class="detail-link"
+                                href="{{ route('admin.stamp_correction_request.approve.edit', ['request_id' => $stampCorrectionRequest->request_id]) }}">詳細</a>
+                        </td>
+                    </tr>
+                @endforeach
+            @elseif($tab === 'approved')
+                @foreach ($stampCorrectionRequests as $stampCorrectionRequest)
+                    <tr class="table-row-content">
+                        <td class="table-content">{{ $stampCorrectionRequest->status }}</td>
+                        <td class="table-content">{{ $stampCorrectionRequest->user->name }}</td>
+                        <td class="table-content">{{ $stampCorrectionRequest->attendance->created_at }}</td>
+                        <td class="table-content">{{ $stampCorrectionRequest->attendance->remarks }}</td>
+                        <td class="table-content">{{ $stampCorrectionRequest->created_at }}</td>
+                        <td class="table-content">
+                            <a class="detail-link"
+                                href="{{ route('admin.stamp_correction_request.approve.edit', ['request_id' => $stampCorrectionRequest->request_id]) }}">詳細</a>
+                        </td>
+                    </tr>
+                @endforeach
+            @endif
         </table>
     </div>
 @endsection

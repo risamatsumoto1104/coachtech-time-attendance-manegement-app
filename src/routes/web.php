@@ -48,7 +48,7 @@ Route::middleware('verified_admin')->group(function () {
     Route::get('/admin/stamp_correction_request/list', [AdminRequestController::class, 'index'])->name('admin.stamp_correction_request.list.index');
 
     // 修正申請承認画面
-    Route::get('/admin/stamp_correction_request/approve/1', [AdminRequestController::class, 'edit'])->name('admin.stamp_correction_request.approve.edit');
+    Route::get('/admin/stamp_correction_request/approve/{request_id}', [AdminRequestController::class, 'edit'])->name('admin.stamp_correction_request.approve.edit');
     Route::patch('/admin/stamp_correction_request/approve/{request_id}', [AdminRequestController::class, 'update'])->name('admin.stamp_correction_request.approve.update');
 
     // ログアウト
