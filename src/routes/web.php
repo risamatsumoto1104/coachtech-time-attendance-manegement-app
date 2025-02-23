@@ -19,18 +19,19 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('user.login');
 });
 
-// メール認証通知の表示と送信
-Route::get('/email/verify', [AuthenticatedSessionController::class, 'showVerificationNotice'])->name('verification.notice');
-// メール内のリンクをクリックしたときにアクセスされるもの
-Route::middleware('signed')->group(function () {
-    Route::get('/email/verify/{user_id}/{hash}', [AuthenticatedSessionController::class, 'verify'])->name('verification.verify');
-});
-// メール認証再送信
-Route::post('/email/resend', [AuthenticatedSessionController::class, 'resendVerificationEmail'])->name('verification.send');
+
+// // メール認証通知の表示と送信
+// Route::get('/email/verify', [AuthenticatedSessionController::class, 'showVerificationNotice'])->name('verification.notice');
+// // メール内のリンクをクリックしたときにアクセスされるもの
+// Route::middleware('signed')->group(function () {
+//     Route::get('/email/verify/{user_id}/{hash}', [AuthenticatedSessionController::class, 'verify'])->name('verification.verify');
+// });
+// // メール認証再送信
+// Route::post('/email/resend', [AuthenticatedSessionController::class, 'resendVerificationEmail'])->name('verification.send');
 
 
 // 管理者
-Route::middleware('verified_admin')->group(function () {
+Route::middleware('admin')->group(function () {
     // 勤怠一覧画面
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.list.index');
 
@@ -55,8 +56,9 @@ Route::middleware('verified_admin')->group(function () {
     Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])->name('admin.logout');
 });
 
+
 // 一般ユーザー
-Route::middleware(['guest'])->group(function () {
+Route::middleware(['user'])->group(function () {
     // 出勤登録画面
     Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
@@ -65,11 +67,11 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.list.index');
 
     // 勤怠詳細画面
-    Route::get('/attendance/1', [AttendanceController::class, 'edit'])->name('attendance.edit');
-    Route::patch('/attendance/{user_id}', [AttendanceController::class, 'update'])->name('attendance.update');
+    Route::get('/attendance/{user_id}/{date}', [AttendanceController::class, 'edit'])->name('attendance.edit');
+    Route::patch('/attendance/{user_id}/{date}', [AttendanceController::class, 'update'])->name('attendance.update');
 
     // 勤怠詳細画面（承認待ち）
-    Route::get('/attendance/pending/1', [AttendanceController::class, 'show'])->name('attendance.show');
+    Route::get('/attendance/pending/{user_id}/{date}', [AttendanceController::class, 'show'])->name('attendance.show');
 
     // 申請一覧画面
     Route::get('/stamp_correction_request/list', [RequestController::class, 'index'])->name('stamp_correction_request.list.index');

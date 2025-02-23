@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AttendanceRequest;
 use App\Models\Attendance;
 use App\Models\BreakTime;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,9 +21,9 @@ class AdminAttendanceController extends Controller
         // 日付を'Y-m-d'形式で文字列にフォーマット
         $currentDateFormatted = $currentDate->format('Y-m-d');
 
-        // created_atの日付と一致するものを取得
+        // clock_inの日付と一致するものを取得
         $attendances = Attendance::with('user', 'breakTimes')
-            ->whereDate('created_at', $currentDateFormatted)
+            ->whereDate('clock_in', $currentDateFormatted)
             ->get();
 
         // 休憩時間と勤務時間を計算
@@ -73,8 +74,8 @@ class AdminAttendanceController extends Controller
         $date = $request->route('date');
         $userId = $request->route('user_id');
 
-        // 今日の日付を設定
-        $date = now()->toDateString(); // 'Y-m-d'形式
+        // ユーザー情報を取得
+        $user = User::where('user_id', $userId)->first();
 
         // 日付を'Y-m-d'形式で文字列にフォーマット
         $currentDate = new \DateTime($date);
@@ -83,11 +84,21 @@ class AdminAttendanceController extends Controller
         $attendances = Attendance::with('user', 'breakTimes')
             // user_id が一致するものを取得
             ->where('user_id', $userId)
-            // created_atの日付 が一致するものを取得
-            ->whereDate('created_at', $date)
+            // clock_inの日付 が一致するものを取得
+            ->whereDate('clock_in', $date)
             ->get();
 
-        return view('admin.attendance.edit', compact('userId', 'currentDateFormatted', 'attendances'));
+        // 日付を取得
+        $clockInDate = $attendances->first()->clock_in ?? null;
+        $clockOutDate = $attendances->first()->clock_out ?? null;
+        // DateTimeオブジェクトを作成
+        $clockInDateTime = new \DateTime($clockInDate);
+        $clockOutDateTime = new \DateTime($clockOutDate);
+        // フォーマットを適用
+        $clockInDateFormatted = $clockInDateTime->format('Y-m-d');
+        $clockOutDateFormatted = $clockOutDateTime->format('Y-m-d');
+
+        return view('admin.attendance.edit', compact('userId', 'currentDateFormatted', 'attendances', 'clockInDateFormatted', 'clockOutDateFormatted'));
     }
 
     // 勤怠詳細画面を保存（管理者）
@@ -100,51 +111,162 @@ class AdminAttendanceController extends Controller
         // バリデーション済みデータ取得
         $validated = $request->validated();
 
+        // 日付を'Y-m-d'形式で文字列にフォーマット
+        $currentDate = new \DateTime($date);
+        $currentDateFormatted = $currentDate->format('Y-m-d');
+
+        // 送信された日付を取得
+        $sentDate = $request->input('current_date');
+
         $attendances = Attendance::with('user', 'breakTimes')
             // attendance_id が一致するものを取得
             ->where('attendance_id', $attendanceId)
             // user_id が一致するものを取得
             ->where('user_id', $userId)
-            // created_at が一致するものを取得
-            ->whereDate('created_at', $date)
+            // clock_in が一致するものを取得
+            ->whereDate('clock_in', $currentDateFormatted)
             ->get();
 
-        // 複数のテーブルをまとめて更新知るため、トランザクションを使用
-        DB::beginTransaction();
+        // 日付が異なる場合
+        if ($sentDate !== $currentDateFormatted) {
+            // 送信された日付を使用
+            $sentDateTime = (new \DateTime($sentDate))->format('Y-m-d');
 
-        try {
-            foreach ($attendances as $attendance) {
-                // 勤怠データを更新
-                $attendance->update([
-                    'clock_in' => $clockInDatetime,
-                    'clock_out' => $clockOutDatetime,
-                    'remarks' => $validated['remarks'] ?? null,
-                ]);
+            // 複数のテーブルをまとめて更新知るため、トランザクションを使用
+            DB::beginTransaction();
 
-                // 休憩時間の更新処理
-                $breakStarts = $validated['break_start'] ?? [];
-                $breakEnds = $validated['break_end'] ?? [];
+            try {
+                foreach ($attendances as $attendance) {
 
+                    $validatedClockIn = $validated['clock_in'];
+                    $validatedClockOut = $validated['clock_out'];
+                    foreach ($attendance->breakTimes as $index => $breakTime) {
+                        $validatedBreakStart = $validated['break_start'][$index];
+                        $validatedBreakEnd = $validated['break_end'][$index];
+                    }
 
-                foreach ($breakStarts as $index => $start) {
-                    if (!empty($start) && !empty($breakEnds[$index])) {
-                        // 既存の休憩時間があれば更新、なければ作成
-                        $breakTime = BreakTime::firstOrNew([
-                            'attendance_id' => $attendance->attendance_id,
-                            'break_start' => $startDatetime,
+                    $clockOutFormatted = (new \DateTime($validatedClockOut))->format('Y-m-d');
+                    $breakStartFormatted = (new \DateTime($validatedBreakStart))->format('Y-m-d');
+                    $breakEndFormatted = (new \DateTime($validatedBreakEnd))->format('Y-m-d');
+
+                    // clock_inの日付再設定
+                    $newClockIn = $sentDateTime . substr($validatedClockIn, 10);
+
+                    // clock_outの日付再設定
+                    $clockOutNewDate = $sentDateTime;
+                    $clockOutNewDateTime = new \DateTime($clockOutNewDate);
+                    if ($clockOutFormatted > $currentDateFormatted) {
+                        $clockOutNewDateTime->modify('+1 day');
+                    }
+                    $clockOutNewDateFormatted = $clockOutNewDateTime->format('Y-m-d');
+                    $newClockOut = $clockOutNewDateFormatted . substr($validatedClockOut, 10);
+
+                    // 勤怠データを更新
+                    $attendance->update([
+                        'clock_in' => $newClockIn ?? $attendance->clock_in,
+                        'clock_out' => $newClockOut ?? $attendance->clock_out,
+                        'remarks' => $validated['remarks'] ?? null,
+                    ]);
+
+                    // break_startの日付再設定
+                    $breakStartNewDate = $sentDateTime;
+                    $breakStartNewDateTime = new \DateTime($breakStartNewDate);
+                    if ($breakStartFormatted > $currentDateFormatted) {
+                        $breakStartNewDateTime->modify('+1 day');
+                    }
+                    $breakStartNewDateFormatted = $breakStartNewDateTime->format('Y-m-d');
+                    $newBreakStart = $breakStartNewDateFormatted . substr($validatedBreakStart, 10);
+
+                    // break_endの日付再設定
+                    $breakEndNewDate = $sentDateTime;
+                    $breakEndNewDateTime = new \DateTime($breakEndNewDate);
+                    if ($breakEndFormatted > $currentDateFormatted) {
+                        $breakEndNewDateTime->modify('+1 day');
+                    }
+                    $breakStartNewDateFormatted = $breakEndNewDateTime->format('Y-m-d');
+                    $newBreakEnd = $breakStartNewDateFormatted . substr($validatedBreakEnd, 10);
+
+                    // 休憩データを更新
+                    foreach ($attendance->breakTimes as $index => $breakTime) {
+                        $breakTime->update([
+                            'break_start' => $newBreakStart ?? $breakTime->break_start,
+                            'break_end' => $newBreakEnd ?? $breakTime->break_end,
                         ]);
-                        $breakTime->break_end = $endDatetime;
-                        $breakTime->save();
+                    }
+
+                    // 新しい休憩データを作成する条件
+                    foreach ($validated["break_start"] as $index => $breakStartTime) {
+                        // 両方の時間が入力されている場合にのみ新しい休憩データを作成
+                        if ($breakStartTime && !empty($validated["break_end"][$index])) {
+                            // もし$attendance->breakTimesが既に存在しない場合、またはbreak_startがnullの場合
+                            if (!isset($attendance->breakTimes[$index]) || $attendance->breakTimes[$index]->break_start === null) {
+                                // 新しい休憩データを作成
+                                $attendance->breakTimes()->create([
+                                    'user_id' => $attendance->user_id,
+                                    'attendance_id' => $attendance->attendance_id,
+                                    'break_start' => $breakStartTime,
+                                    'break_end' => $validated["break_end"][$index],
+                                ]);
+                            }
+                        }
                     }
                 }
+
+                DB::commit();
+
+                return redirect()->route('admin.attendance.list.index')->with('success', '勤怠データが更新されました。');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->with('error', '更新に失敗しました。');
             }
+        } else {
+            // 通常の日付を使用
+            // 複数のテーブルをまとめて更新知るため、トランザクションを使用
+            DB::beginTransaction();
 
-            DB::commit();
+            try {
+                foreach ($attendances as $attendance) {
 
-            return redirect()->route('admin.attendance.list.index')->with('success', '勤怠データが更新されました。');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', '更新に失敗しました。');
+                    // 勤怠データを更新
+                    $attendance->update([
+                        'clock_in' => $validated['clock_in'] ?? null,
+                        'clock_out' => $validated['clock_out'] ?? null,
+                        'remarks' => $validated['remarks'] ?? null,
+                    ]);
+
+                    // 休憩データを更新
+                    foreach ($attendance->breakTimes as $index => $breakTime) {
+                        $breakTime->update([
+                            'break_start' => $validated["break_start"][$index] ?? $breakTime->break_start,
+                            'break_end' => $validated["break_end"][$index] ?? $breakTime->break_end,
+                        ]);
+                    }
+
+                    // 新しい休憩データを作成する条件
+                    foreach ($validated["break_start"] as $index => $breakStartTime) {
+                        // 両方の時間が入力されている場合にのみ新しい休憩データを作成
+                        if ($breakStartTime && !empty($validated["break_end"][$index])) {
+                            // もし$attendance->breakTimesが既に存在しない場合、またはbreak_startがnullの場合
+                            if (!isset($attendance->breakTimes[$index]) || $attendance->breakTimes[$index]->break_start === null) {
+                                // 新しい休憩データを作成
+                                $attendance->breakTimes()->create([
+                                    'user_id' => $attendance->user_id,
+                                    'attendance_id' => $attendance->attendance_id,
+                                    'break_start' => $breakStartTime,
+                                    'break_end' => $validated["break_end"][$index],
+                                ]);
+                            }
+                        }
+                    }
+                }
+
+                DB::commit();
+
+                return redirect()->route('admin.attendance.list.index')->with('success', '勤怠データが更新されました。');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->with('error', '更新に失敗しました。');
+            }
         }
     }
 }

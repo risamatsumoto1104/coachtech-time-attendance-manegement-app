@@ -23,13 +23,13 @@
         <nav class="header-nav">
             <ul class="nav-list">
                 <li class="nav-item">
-                    <a class="nav-link" href="">勤怠</a>
+                    <a class="nav-link" href="{{ route('attendance.create') }}">勤怠</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="">勤怠一覧</a>
+                    <a class="nav-link" href="{{ route('attendance.list.index') }}">勤怠一覧</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="">申請</a>
+                    <a class="nav-link" href="{{ route('stamp_correction_request.list.index') }}">申請</a>
                 </li>
                 <li class="nav-item">
                     <form action="{{ route('user.logout') }}" method="post">

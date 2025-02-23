@@ -26,19 +26,13 @@ class AttendanceFactory extends Factory
         // clock_out は clock_in から9時間後
         $clockOut = (clone $clockIn)->modify('+9 hours');
 
-        // clockOut の 日付部分 が todayEnd と異なっていれば翌日に設定
-        if ($clockOut->format('Y-m-d') !== $clockIn->format('Y-m-d')) {
-            // clockOut の日付を clockIn の翌日に修正
-            $clockOut = (clone $clockIn)->modify('+1 day')->setTime($clockOut->format('H'), $clockOut->format('i'));
-        }
-
         // 秒を切り上げる処理
-        $clockIn = $this->roundUpToNextMinute($clockIn);
-        $clockOut = $this->roundUpToNextMinute($clockOut);
+        $roundUpClockIn = $this->roundUpToNextMinute($clockIn);
+        $roundUpClockOut = $this->roundUpToNextMinute($clockOut);
 
         return [
-            'clock_in' => $clockIn,
-            'clock_out' => $clockOut,
+            'clock_in' => $roundUpClockIn,
+            'clock_out' => $roundUpClockOut,
             'remarks' => '電車遅延の為'
         ];
     }

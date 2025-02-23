@@ -14,41 +14,26 @@ class BreakTimeFactory extends Factory
      */
     public function definition()
     {
-        // Attendance の出勤・退勤時間を取得
+        // Attendanceテーブルからランダムに1件を取得
         $attendance = Attendance::inRandomOrder()->first();
         $clockIn = $attendance->clock_in;
         $clockOut = $attendance->clock_out;
 
-        // 出勤時間が退勤時間より前でない場合は、退勤時間を翌日に設定
-        if ($clockIn > $clockOut) {
-            $clockOut->modify('+1 day');
-        }
-
-        // 休憩開始と終了時間を出勤・退勤時間内に設定
+        // break_start と break_end の作成
+        // break_start を clock_in から clock_out の間でランダムに設定
         $breakStart = $this->faker->dateTimeBetween($clockIn, $clockOut);
-        $breakEnd = $this->faker->dateTimeBetween($breakStart, $clockOut);
+
+        // break_end は break_start から1時間後
+        $breakEnd = (clone $breakStart)->modify('+1 hours');
 
         // 秒を切り上げる処理
-        $breakStart = $this->roundUpToNextMinute($breakStart);
-        $breakEnd = $this->roundUpToNextMinute($breakEnd);
+        $roundUpBreakStart = $this->roundUpToNextMinute($breakStart);
+        $roundUpBreakEnd = $this->roundUpToNextMinute($breakEnd);
 
         return [
-            'break_start' => $breakStart,
-            'break_end' => $breakEnd,
+            'break_start' => $roundUpBreakStart,
+            'break_end' => $roundUpBreakEnd,
         ];
-
-        /// 不正な場合、1回だけ再生成を試みる
-        if ($breakStart >= $breakEnd || $breakStart < $clockIn || $breakEnd > $clockOut) {
-            // 1回だけ再生成
-            $breakStart = $this->faker->dateTimeBetween($clockIn, $clockOut);
-            $breakEnd = $this->faker->dateTimeBetween($breakStart, $clockOut);
-
-            // 再生成後に依然として不正なら、そのままにしておく
-            if ($breakStart >= $breakEnd || $breakStart < $clockIn || $breakEnd > $clockOut) {
-                // ここで不正データを返すか、エラーハンドリングを行う
-                return []; // null を返す代わりに空の配列を返す
-            }
-        }
     }
 
     // 秒を切り上げる処理

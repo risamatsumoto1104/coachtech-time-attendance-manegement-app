@@ -41,14 +41,14 @@
             </tr>
             @foreach ($attendances as $attendance)
                 <tr class="table-row-content">
-                    <td class="table-content">{{ $attendance->formatted_created_at }}</td>
+                    <td class="table-content">{{ $attendance->formatted_clock_in }}</td>
                     <td class="table-content">{{ substr($attendance->clock_in ?? '', 11, 5) }}</td>
                     <td class="table-content">{{ substr($attendance->clock_out ?? '', 11, 5) }}</td>
                     <td class="table-content">{{ $attendance->totalBreakTime ?? '' }}</td>
                     <td class="table-content">{{ $attendance->totalWorkTime ?? '' }}</td>
                     <td class="table-content">
                         <a class="detail-link"
-                            href="{{ route('admin.attendance.edit', ['user_id' => $attendance->user->user_id, 'date' => $currentDateFormatted]) }}">詳細</a>
+                            href="{{ route('admin.attendance.edit', ['user_id' => $attendance->user->user_id, 'date' => date('Y-m-d', strtotime($attendance->clock_in))]) }}">詳細</a>
                     </td>
                 </tr>
             @endforeach

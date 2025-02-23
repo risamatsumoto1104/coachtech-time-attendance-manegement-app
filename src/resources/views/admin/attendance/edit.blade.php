@@ -50,7 +50,7 @@
 
                 <tr class="table-row">
                     <th class="table-label">日付</th>
-                    <td class="table-content">
+                    <td class="table-content" id="date-wrapper">
                         <div class="content-wrapper">
                             <p class="content-year">{{ substr($currentDateFormatted ?? '', 0, 4) }}年</p>
                             <p class="to"></p>
@@ -58,6 +58,8 @@
                                 {{ substr($currentDateFormatted ?? '', 5, 2) }}月{{ substr($currentDateFormatted ?? '', 8, 2) }}日
                             </p>
                         </div>
+                        <input class="date-input" type="date" name="current_date" id="date-input"
+                            value="{{ $currentDateFormatted }}" style="display: none;" required>
                     </td>
                 </tr>
 
@@ -65,19 +67,21 @@
                     <th class="table-label">出勤・退勤</th>
                     <td class="table-content">
                         <div class="content-wrapper">
-                            @foreach ($attendances as $attendance)
+                            @foreach ($attendances as $index => $attendance)
                                 <!-- 表示用の入力フィールド（h:i形式） -->
-                                <input class="content-input" name="clock_in" id="clock_in_id" type="text"
-                                    value="{{ substr($attendance->clock_in ?? '', 11, 5) }}">
+                                <input class="content-input" name="clock_in" type="text"
+                                    value="{{ substr($attendance->clock_in ?? '', 11, 5) }}"
+                                    data-index="{{ $index }}" data-type="start">
                                 <p class="to">～</p>
-                                <input class="content-input" name="clock_out" id="clock_out_id" type="text"
-                                    value="{{ substr($attendance->clock_out ?? '', 11, 5) }}">
+                                <input class="content-input" name="clock_out" type="text"
+                                    value="{{ substr($attendance->clock_out ?? '', 11, 5) }}"
+                                    data-index="{{ $index }}" data-type="end">
 
                                 <!-- 実際に送信するdatetime値（hiddenフィールド） -->
-                                <input type="hidden" name="clock_in" id="clock_in_id_hidden"
-                                    value="{{ $attendance->clock_in }}">
-                                <input type="hidden" name="clock_out" id="clock_out_id_hidden"
-                                    value="{{ $attendance->clock_out }}">
+                                <input type="hidden" name="clock_in" value="{{ $attendance->clock_in }}"
+                                    data-index="{{ $index }}" data-type="hidden_start">
+                                <input type="hidden" name="clock_out" value="{{ $attendance->clock_out }}"
+                                    data-index="{{ $index }}" data-type="hidden_end">
                             @endforeach
                         </div>
                         @foreach (['clock_in', 'clock_out'] as $field)
@@ -88,81 +92,58 @@
                     </td>
                 </tr>
 
-                <tr class="table-row">
-                    <th class="table-label">休憩</th>
-                    <td class="table-content">
-                        <div class="content-wrapper">
-                            @foreach ($attendances as $attendance)
-                                <!-- 表示用の入力フィールド（h:i形式） -->
-                                <input class="content-input" name="break_start[]" id="break_start_id" type="text"
-                                    value="{{ substr($attendance->breakTimes[0]->break_start ?? '', 11, 5) }}">
-                                <p class="to">～</p>
-                                <input class="content-input" name="break_end[]" id="break_end_id" type="text"
-                                    value="{{ substr($attendance->breakTimes[0]->break_end ?? '', 11, 5) }}">
-
-                                <!-- 実際に送信するdatetime値（hiddenフィールド） -->
-                                <input type="hidden" name="break_start[]" id="break_start_id_hidden"
-                                    value="{{ $attendance->breakTimes[0]->break_start }}">
-                                <input type="hidden" name="break_end[]" id="break_end_id_hidden"
-                                    value="{{ $attendance->breakTimes[0]->break_end }}">
-                            @endforeach
-                        </div>
-                        @foreach (['break_start', 'break_end'] as $field)
-                            @error("{$field}.0")
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        @endforeach
-                    </td>
-                </tr>
-
-                <tr class="table-row">
-                    <th class="table-label">休憩2</th>
-                    <td class="table-content">
-                        <div class="content-wrapper">
-                            @foreach ($attendances as $attendance)
-                                <!-- 表示用の入力フィールド（h:i形式） -->
-                                <input class="content-input" name="break_start[]" id="break_start_id" type="text"
-                                    value="{{ substr($attendance->breakTimes[1]->break_start ?? '', 11, 5) }}">
-                                <p class="to">～</p>
-                                <input class="content-input" name="break_end[]" id="break_end_id" type="text"
-                                    value="{{ substr($attendance->breakTimes[1]->break_end ?? '', 11, 5) }}">
-
-                                <!-- 実際に送信するdatetime値（hiddenフィールド） -->
-                                <input type="hidden" name="break_start[]" id="break_start_id_hidden"
-                                    value="{{ isset($attendance->breakTimes[1]) ? $attendance->breakTimes[1]->break_start : '' }}">
-                                <input type="hidden" name="break_end[]" id="break_end_id_hidden"
-                                    value="{{ isset($attendance->breakTimes[1]) ? $attendance->breakTimes[1]->break_end : '' }}">
-                            @endforeach
-                        </div>
-                        @foreach (['break_start', 'break_end'] as $field)
-                            @error("{$field}.1")
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        @endforeach
-                    </td>
-                </tr>
-
                 @foreach ($attendances as $attendance)
-                    @foreach ($attendance->breakTimes->skip(2) as $index => $breakTime)
+                    @for ($i = 0; $i < 2; $i++)
+                        {{-- 休憩1, 休憩2は必ず表示 --}}
                         <tr class="table-row">
-                            <th class="table-label">休憩{{ $index + 1 }}</th>
+                            <th class="table-label">休憩{{ $i + 1 }}</th>
                             <td class="table-content">
                                 <div class="content-wrapper">
-                                    <!-- 表示用の入力フィールド（h:i形式） -->
-                                    <input class="content-input" name="break_start[]" id="break_start_id" type="text"
-                                        value="{{ substr($breakTime->break_start ?? '', 11, 5) }}">
+                                    <input class="content-input" type="text" data-index="{{ $i }}"
+                                        data-type="start"
+                                        value="{{ isset($attendance->breakTimes[$i]) ? substr($attendance->breakTimes[$i]->break_start, 11, 5) : '' }}">
                                     <p class="to">～</p>
-                                    <input class="content-input" name="break_end[]" id="break_end_id" type="text"
-                                        value="{{ substr($breakTime->break_end ?? '', 11, 5) }}">
+                                    <input class="content-input" type="text" data-index="{{ $i }}"
+                                        data-type="end"
+                                        value="{{ isset($attendance->breakTimes[$i]) ? substr($attendance->breakTimes[$i]->break_end, 11, 5) : '' }}">
 
-                                    <!-- 実際に送信するdatetime値（hiddenフィールド） -->
-                                    <input type="hidden" name="break_start[]" id="break_start_id_hidden"
-                                        value="{{ isset($breakTime) && isset($breakTime->break_start) ? $breakTime->break_start : '' }}">
-                                    <input type="hidden" name="break_end[]" id="break_end_id_hidden"
-                                        value="{{ isset($breakTime) && isset($breakTime->break_end) ? $breakTime->break_end : '' }}">
+                                    <input class="content-input" type="hidden" name="break_start[]"
+                                        data-index="{{ $i }}" data-type="hidden_start"
+                                        value="{{ $attendance->breakTimes[$i]->break_start ?? '' }}">
+                                    <input class="content-input" type="hidden" name="break_end[]"
+                                        data-index="{{ $i }}" data-type="hidden_end"
+                                        value="{{ $attendance->breakTimes[$i]->break_end ?? '' }}">
                                 </div>
                                 @foreach (['break_start', 'break_end'] as $field)
-                                    @error("{$field}. ($index + 1)")
+                                    @error("{$field}." . $i)
+                                        <p class="error-message">{{ $message }}</p>
+                                    @enderror
+                                @endforeach
+                            </td>
+                        </tr>
+                    @endfor
+
+                    @foreach ($attendance->breakTimes->skip(2) as $index => $breakTime)
+                        {{-- 休憩3以降はデータがある場合のみ表示 --}}
+                        <tr class="table-row">
+                            <th class="table-label">休憩{{ $index + 3 }}</th>
+                            <td class="table-content">
+                                <div class="content-wrapper">
+                                    <input class="content-input" type="text" data-index="{{ $index + 2 }}"
+                                        data-type="start" value="{{ substr($breakTime->break_start ?? '', 11, 5) }}">
+                                    <p class="to">～</p>
+                                    <input class="content-input" type="text" data-index="{{ $index + 2 }}"
+                                        data-type="end" value="{{ substr($breakTime->break_end ?? '', 11, 5) }}">
+
+                                    <input class="content-input" type="hidden" name="break_start[]"
+                                        data-index="{{ $index + 2 }}" data-type="hidden_start"
+                                        value="{{ $breakTime->break_start }}">
+                                    <input class="content-input" type="hidden" name="break_end[]"
+                                        data-index="{{ $index + 2 }}" data-type="hidden_end"
+                                        value="{{ $breakTime->break_end }}">
+                                </div>
+                                @foreach (['break_start', 'break_end'] as $field)
+                                    @error("{$field}." . ($index + 2))
                                         <p class="error-message">{{ $message }}</p>
                                     @enderror
                                 @endforeach
@@ -191,89 +172,62 @@
             </div>
         </form>
     </div>
+@endsection
 
+@section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 変更を監視
-            const clockInInput = document.getElementById('clock_in_id');
-            const clockOutInput = document.getElementById('clock_out_id');
-            const breakStartInput = document.getElementById('break_start_id');
-            const breakEndInput = document.getElementById('break_end_id');
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.content-input[data-type="start"], .content-input[data-type="end"]').forEach(
+                input => {
+                    input.addEventListener('input', function() {
+                        const index = this.dataset.index; // インデックスを取得
+                        const type = this.dataset.type; // start または end を取得
 
-            const clockInHidden = document.getElementById('clock_in_id_hidden');
-            const clockOutHidden = document.getElementById('clock_out_id_hidden');
-            const breakStartHidden = document.getElementById('break_start_id_hidden');
-            const breakEndHidden = document.getElementById('break_end_id_hidden');
+                        // 入力された時間を取得
+                        const timeValue = this.value;
 
-            // 時間を適切なフォーマットに変換する関数
-            function formatTimeToDatetime(time) {
-                const timeParts = time.split(':');
-                if (timeParts.length === 2) {
-                    const hours = timeParts[0].padStart(2, '0'); // 時間を2桁に
-                    const minutes = timeParts[1].padStart(2, '0'); // 分を2桁に
-                    const now = new Date(); // 現在の日付を取得
-
-                    // 0:00の場合など、時間部分が"0"だと0時として処理する
-                    if (hours === '00') {
-                        hours = '00';
-                    }
-
-                    // 現在の日付に時間と分を設定
-                    now.setHours(hours);
-                    now.setMinutes(minutes);
-                    now.setSeconds(0);
-
-                    // フォーマットされた時間を YYYY-MM-DD HH:mm:ss 形式に
-                    const year = now.getFullYear();
-                    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // 月は0始まりなので +1
-                    const day = now.getDate().toString().padStart(2, '0');
-                    const formattedTime =
-                        `${year}-${month}-${day} ${hours}:${minutes}:${now.getSeconds().toString().padStart(2, '0')}`;
-
-                    return formattedTime;
-                }
-                return '';
-            }
-
-            // clock_in の変更時に hidden フィールドも更新
-            if (clockInInput) {
-                clockInInput.addEventListener('input', function() {
-                    clockInHidden.value = formatTimeToDatetime(clockInInput.value);
+                        // 対応する隠しフィールドを取得して更新
+                        const hiddenInput = document.querySelector(
+                            `input[data-index="${index}"][data-type="hidden_${type}"]`);
+                        if (hiddenInput) {
+                            const originalValue = hiddenInput.value; // 元の日時を取得
+                            const newValue = originalValue.slice(0, 11) + timeValue; // H:M を入れ替える
+                            hiddenInput.value = newValue; // 更新
+                        }
+                    });
                 });
-            }
 
-            // clock_out の変更時に hidden フィールドも更新
-            if (clockOutInput) {
-                clockOutInput.addEventListener('input', function() {
-                    clockOutHidden.value = formatTimeToDatetime(clockOutInput.value);
-                });
-            }
+            // 日付を選択するためのinputを設定
+            let dateWrapper = document.getElementById('date-wrapper');
+            let dateInput = document.getElementById('date-input');
 
-            // break_start の変更時に hidden フィールドも更新
-            if (breakStartInput) {
-                breakStartInput.addEventListener('input', function() {
-                    breakStartHidden.value = formatTimeToDatetime(breakStartInput.value);
-                });
-            }
+            // 日付表示部分をクリックしたときの処理
+            dateWrapper.addEventListener('click', function() {
+                dateInput.style.display = 'block'; // 日付入力フィールドを表示
+                dateInput.focus(); // フォーカスを当てる
+            });
 
-            // break_end の変更時に hidden フィールドも更新
-            if (breakEndInput) {
-                breakEndInput.addEventListener('input', function() {
-                    breakEndHidden.value = formatTimeToDatetime(breakEndInput.value);
-                });
-            }
+            // 日付が選択された後の処理
+            dateInput.addEventListener('change', function() {
+                let datePart = this.value; // 選択された日付をdatePartに更新
+                this.style.display = 'none'; // 日付入力フィールドを隠す
 
-            // フォーム送信時に input フィールドの name 属性を削除
-            const form = document.querySelector('form'); // フォームを選択
-            if (form) {
-                form.addEventListener('submit', function() {
-                    // input フィールドの name 属性を削除
-                    if (clockInInput) clockInInput.removeAttribute('name');
-                    if (clockOutInput) clockOutInput.removeAttribute('name');
-                    if (breakStartInput) breakStartInput.removeAttribute('name');
-                    if (breakEndInput) breakEndInput.removeAttribute('name');
-                });
-            }
+                // 日付をフォーマットしてp要素を更新
+                let year = datePart.substring(0, 4);
+                let month = datePart.substring(5, 7);
+                let day = datePart.substring(8, 10);
+
+                // 年と日付のp要素を取得
+                let yearElement = dateWrapper.querySelector('.content-year');
+                let dateElement = dateWrapper.querySelector('.content-date');
+
+                // p要素の内容を更新
+                yearElement.textContent = year + '年';
+                dateElement.textContent = month + '月' + day + '日';
+
+                // current_dateのinputの値を更新
+                this.value = datePart;
+            });
         });
     </script>
 @endsection
