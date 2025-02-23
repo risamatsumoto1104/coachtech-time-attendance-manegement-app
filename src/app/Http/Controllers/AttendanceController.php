@@ -12,13 +12,66 @@ class AttendanceController extends Controller
     // 出勤登録画面の新規作成（一般ユーザー）
     public function create(Request $request)
     {
-        return view('attendance.create');
+        // ログインしているユーザーを取得
+        $user = Auth::user();
+
+        $today = date('Y-m-d'); // 今日の日付のみ
+        $date = date('Y-m-d H:i:s');
+        $timestamp = strtotime($date);
+        $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+        $weekday = $weekdays[date('w', $timestamp)];
+
+        // セッションの日付を取得（初回は空なので null）
+        $lastAccessDate = session('lastAccessDate');
+
+        // 前回アクセス日と今日が異なればセッションをリセット
+        if ($lastAccessDate !== $today) {
+            session(['attendanceStatus' => 'before', 'lastAccessDate' => $today]);
+        }
+
+        // セッションからattendanceStatusを取得
+        $attendanceStatus = session('attendanceStatus', 'before');
+
+        // すでに今日の勤怠が登録されているかチェック
+        $attendance = Attendance::where('user_id', $user->user_id)
+            ->whereDate('clock_in', $today)
+            ->first();
+
+        // 勤怠が登録されている場合は、checked_outをセッションから取得
+        if ($attendance) {
+            session(['attendanceStatus' => 'checked_out']);
+            $attendanceStatus = 'checked_out';
+        }
+
+        return view('attendance.create', compact('user', 'date', 'weekday', 'attendanceStatus'));
     }
 
     // 出勤登録画面の保存（一般ユーザー）
     public function store(Request $request)
     {
-        return view('attendance.store');
+        // 現在の `attendanceStatus` を取得（なければ `before`）
+        $attendanceStatus = session('attendanceStatus', 'before');
+
+        if ($request->input('clock_in')) {
+            session(['attendanceStatus' => 'working']);
+            return redirect()->route('attendance.create');
+        } elseif ($request->input('break_start')) {
+            // 休憩入ボタンを押したとき、「休憩中」画面へ
+            session(['attendanceStatus' => 'break']);
+            return redirect()->route('attendance.create');
+        } elseif ($request->input('break_end')) {
+            // 休憩戻ボタンを押したとき、「勤務中」画面へ
+            session(['attendanceStatus' => 'working']);
+            return redirect()->route('attendance.create');
+        } elseif ($request->input('clock_out')) {
+            // 退勤ボタンを押したとき、「退勤済」画面へ
+            session(['attendanceStatus' => 'checked_out']);
+            return redirect()->route('attendance.create');
+        }
+
+        // 状態をセッションに保存
+        session(['attendanceStatus' => $attendanceStatus]);
+        return redirect()->route('attendance.create');
     }
 
     // 勤怠一覧画面を表示（一般ユーザー）
