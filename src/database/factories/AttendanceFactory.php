@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Attendance;
+use App\Models\BreakTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
@@ -14,14 +16,21 @@ class AttendanceFactory extends Factory
      */
     public function definition()
     {
-        // 今日の開始時刻を取得
-        $todayStart = now()->startOfDay();
+        // 過去一週間の開始時刻を取得（7日前から今日まで）
+        $weekStart = now()->subDays(7)->startOfDay();
+        $today = now()->endOfDay();
 
-        // 今日の終了時刻を取得
-        $todayEnd = now()->endOfDay();
+        // 過去一週間の日付を配列に取得
+        $dates = [];
+        for ($date = $weekStart; $date <= $today; $date->modify('+1 day')) {
+            $dates[] = $date->format('Y-m-d');
+        }
+
+        // 配列からランダムに日付を選択
+        $randomDate = $dates[array_rand($dates)]; // ランダムな日付を取得
 
         // clock_in を今日の開始時刻から終了時刻の間でランダムに設定
-        $clockIn = $this->faker->dateTimeBetween($todayStart, $todayEnd);
+        $clockIn = $this->faker->dateTimeBetween($randomDate . '00:00:00', $randomDate . ' 14:59:59');
 
         // clock_out は clock_in から9時間後
         $clockOut = (clone $clockIn)->modify('+9 hours');
@@ -35,6 +44,34 @@ class AttendanceFactory extends Factory
             'clock_out' => $roundUpClockOut,
             'remarks' => '電車遅延の為'
         ];
+    }
+
+    // BreakTimeに関連付け
+    public function configure()
+    {
+        return $this->afterCreating(function (Attendance $attendance) {
+            // clock_in と clock_out を取得
+            $clockIn = $attendance->clock_in;
+            $clockOut = $attendance->clock_out;
+
+            // break_start を clock_in から clock_out の間でランダムに設定
+            $breakStart = $this->faker->dateTimeBetween($clockIn, $clockOut);
+
+            // break_end は break_start から1時間後
+            $breakEnd = (clone $breakStart)->modify('+1 hour');
+
+            // 秒を切り上げる処理
+            $roundUpBreakStart = $this->roundUpToNextMinute($breakStart);
+            $roundUpBreakEnd = $this->roundUpToNextMinute($breakEnd);
+
+            // BreakTimeを作成
+            BreakTime::create([
+                'attendance_id' => $attendance->attendance_id,
+                'user_id' => $attendance->user_id,
+                'break_start' => $roundUpBreakStart,
+                'break_end' => $roundUpBreakEnd,
+            ]);
+        });
     }
 
     // 秒を切り上げる処理

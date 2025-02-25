@@ -36,6 +36,7 @@ class AdminStaffController extends Controller
             ->where('user_id', $userId)
             ->whereYear('clock_in', date('Y', strtotime($currentDateYearMonth)))
             ->whereMonth('clock_in', date('m', strtotime($currentDateYearMonth)))
+            ->orderBy('clock_in', 'asc') // 日付で昇順に並び変え
             ->get()
             ->map(function ($attendance) {
                 $timestamp = strtotime($attendance->clock_in);

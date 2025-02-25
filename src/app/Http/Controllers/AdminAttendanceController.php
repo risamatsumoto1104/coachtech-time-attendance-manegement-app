@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceRequest;
 use App\Models\Attendance;
-use App\Models\BreakTime;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -88,17 +87,7 @@ class AdminAttendanceController extends Controller
             ->whereDate('clock_in', $date)
             ->get();
 
-        // 日付を取得
-        $clockInDate = $attendances->first()->clock_in ?? null;
-        $clockOutDate = $attendances->first()->clock_out ?? null;
-        // DateTimeオブジェクトを作成
-        $clockInDateTime = new \DateTime($clockInDate);
-        $clockOutDateTime = new \DateTime($clockOutDate);
-        // フォーマットを適用
-        $clockInDateFormatted = $clockInDateTime->format('Y-m-d');
-        $clockOutDateFormatted = $clockOutDateTime->format('Y-m-d');
-
-        return view('admin.attendance.edit', compact('userId', 'currentDateFormatted', 'attendances', 'clockInDateFormatted', 'clockOutDateFormatted'));
+        return view('admin.attendance.edit', compact('userId', 'currentDateFormatted', 'attendances'));
     }
 
     // 勤怠詳細画面を保存（管理者）
@@ -193,23 +182,6 @@ class AdminAttendanceController extends Controller
                             'break_end' => $newBreakEnd ?? $breakTime->break_end,
                         ]);
                     }
-
-                    // 新しい休憩データを作成する条件
-                    foreach ($validated["break_start"] as $index => $breakStartTime) {
-                        // 両方の時間が入力されている場合にのみ新しい休憩データを作成
-                        if ($breakStartTime && !empty($validated["break_end"][$index])) {
-                            // もし$attendance->breakTimesが既に存在しない場合、またはbreak_startがnullの場合
-                            if (!isset($attendance->breakTimes[$index]) || $attendance->breakTimes[$index]->break_start === null) {
-                                // 新しい休憩データを作成
-                                $attendance->breakTimes()->create([
-                                    'user_id' => $attendance->user_id,
-                                    'attendance_id' => $attendance->attendance_id,
-                                    'break_start' => $breakStartTime,
-                                    'break_end' => $validated["break_end"][$index],
-                                ]);
-                            }
-                        }
-                    }
                 }
 
                 DB::commit();
@@ -240,23 +212,6 @@ class AdminAttendanceController extends Controller
                             'break_start' => $validated["break_start"][$index] ?? $breakTime->break_start,
                             'break_end' => $validated["break_end"][$index] ?? $breakTime->break_end,
                         ]);
-                    }
-
-                    // 新しい休憩データを作成する条件
-                    foreach ($validated["break_start"] as $index => $breakStartTime) {
-                        // 両方の時間が入力されている場合にのみ新しい休憩データを作成
-                        if ($breakStartTime && !empty($validated["break_end"][$index])) {
-                            // もし$attendance->breakTimesが既に存在しない場合、またはbreak_startがnullの場合
-                            if (!isset($attendance->breakTimes[$index]) || $attendance->breakTimes[$index]->break_start === null) {
-                                // 新しい休憩データを作成
-                                $attendance->breakTimes()->create([
-                                    'user_id' => $attendance->user_id,
-                                    'attendance_id' => $attendance->attendance_id,
-                                    'break_start' => $breakStartTime,
-                                    'break_end' => $validated["break_end"][$index],
-                                ]);
-                            }
-                        }
                     }
                 }
 

@@ -18,7 +18,7 @@
                 <form class="attendance-form" action="{{ route('attendance.store') }}" method="POST">
                     @csrf
                     <input class="submit-clock-in" type="submit" value="出勤">
-                    <input name="clock_in" type="hidden" value="2025-02-21 17:40:00">
+                    <input name="clock_in" type="hidden" value="{{ $date }}">
                 </form>
             </div>
         @elseif ($attendanceStatus == 'working')
@@ -33,12 +33,12 @@
                     <form class="attendance-form" action="{{ route('attendance.store') }}" method="POST">
                         @csrf
                         <input class="submit-clock-out" type="submit" value="退勤">
-                        <input name="clock_out" type="hidden" value="2025-02-21 17:50:00">
+                        <input name="clock_out" type="hidden" value="{{ $date }}">
                     </form>
                     <form class="attendance-form" action="{{ route('attendance.store') }}" method="POST">
                         @csrf
                         <input class="submit-break-start" type="submit" value="休憩入">
-                        <input name="break_start" type="hidden" value="2025-02-21 17:42:00">
+                        <input name="break_start" type="hidden" value="{{ $date }}">
                     </form>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                 <form class="attendance-form" action="{{ route('attendance.store') }}" method="POST">
                     @csrf
                     <input class="submit-break-end" type="submit" value="休憩戻">
-                    <input name="break_end" type="hidden" value="2025-02-21 17:43:00">
+                    <input name="break_end" type="hidden" value="{{ $date }}">
                 </form>
             </div>
         @elseif ($attendanceStatus == 'checked_out')

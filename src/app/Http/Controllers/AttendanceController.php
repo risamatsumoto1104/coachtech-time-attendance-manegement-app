@@ -49,12 +49,31 @@ class AttendanceController extends Controller
     // 出勤登録画面の保存（一般ユーザー）
     public function store(Request $request)
     {
+        // ログインしているユーザーを取得
+        $user = Auth::user();
+
         // 現在の `attendanceStatus` を取得（なければ `before`）
         $attendanceStatus = session('attendanceStatus', 'before');
 
         if ($request->input('clock_in')) {
-            session(['attendanceStatus' => 'working']);
-            return redirect()->route('attendance.create');
+            // 出勤ボタンを押したとき、「勤務中」画面へ
+            // Attendance テーブルに保存
+            $attendance = Attendance::create(
+                ['user_id' => $user->user_id], // user_idで検索
+                [
+                    'clock_in' => $request->input('clock_in'),
+                    'clock_out' => null,
+                    'remarks' => null,
+                ]
+            );
+
+            // Attendance が保存されたか確認
+            if ($attendance->attendance_id) {
+                session(['attendanceStatus' => 'working']);
+                return redirect()->route('attendance.create');
+            } else {
+                return redirect()->back()->withErrors(['error' => '保存に失敗しました。']);
+            }
         } elseif ($request->input('break_start')) {
             // 休憩入ボタンを押したとき、「休憩中」画面へ
             session(['attendanceStatus' => 'break']);

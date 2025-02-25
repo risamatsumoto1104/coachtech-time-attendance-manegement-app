@@ -50,16 +50,12 @@
 
                 <tr class="table-row">
                     <th class="table-label">日付</th>
-                    <td class="table-content" id="date-wrapper">
-                        <div class="content-wrapper">
-                            <p class="content-year">{{ substr($currentDateFormatted ?? '', 0, 4) }}年</p>
+                    <td class="table-content">
+                        <div class="content-wrapper" onclick="document.querySelector('.date-input').showPicker();">
+                            <input class="date-input" name="current_date" id="date-input" type="date"
+                                value="{{ $currentDateFormatted }}">
                             <p class="to"></p>
-                            <p class="content-date">
-                                {{ substr($currentDateFormatted ?? '', 5, 2) }}月{{ substr($currentDateFormatted ?? '', 8, 2) }}日
-                            </p>
                         </div>
-                        <input class="date-input" type="date" name="current_date" id="date-input"
-                            value="{{ $currentDateFormatted }}" style="display: none;" required>
                     </td>
                 </tr>
 
@@ -92,64 +88,33 @@
                     </td>
                 </tr>
 
-                @foreach ($attendances as $attendance)
-                    @for ($i = 0; $i < 2; $i++)
-                        {{-- 休憩1, 休憩2は必ず表示 --}}
-                        <tr class="table-row">
-                            <th class="table-label">休憩{{ $i + 1 }}</th>
-                            <td class="table-content">
-                                <div class="content-wrapper">
-                                    <input class="content-input" type="text" data-index="{{ $i }}"
-                                        data-type="start"
-                                        value="{{ isset($attendance->breakTimes[$i]) ? substr($attendance->breakTimes[$i]->break_start, 11, 5) : '' }}">
-                                    <p class="to">～</p>
-                                    <input class="content-input" type="text" data-index="{{ $i }}"
-                                        data-type="end"
-                                        value="{{ isset($attendance->breakTimes[$i]) ? substr($attendance->breakTimes[$i]->break_end, 11, 5) : '' }}">
+                @foreach ($attendance->breakTimes as $index => $breakTime)
+                    <tr class="table-row">
+                        <th class="table-label">休憩{{ $index + 1 }}</th>
+                        <td class="table-content">
+                            <div class="content-wrapper">
+                                <!-- 表示用の入力フィールド（h:i形式） -->
+                                <input class="content-input" type="text" data-index="{{ $index + 1 }}"
+                                    data-type="start" value="{{ substr($breakTime->break_start ?? '', 11, 5) }}">
+                                <p class="to">～</p>
+                                <input class="content-input" type="text" data-index="{{ $index + 1 }}"
+                                    data-type="end" value="{{ substr($breakTime->break_end ?? '', 11, 5) }}">
 
-                                    <input class="content-input" type="hidden" name="break_start[]"
-                                        data-index="{{ $i }}" data-type="hidden_start"
-                                        value="{{ $attendance->breakTimes[$i]->break_start ?? '' }}">
-                                    <input class="content-input" type="hidden" name="break_end[]"
-                                        data-index="{{ $i }}" data-type="hidden_end"
-                                        value="{{ $attendance->breakTimes[$i]->break_end ?? '' }}">
-                                </div>
-                                @foreach (['break_start', 'break_end'] as $field)
-                                    @error("{$field}." . $i)
-                                        <p class="error-message">{{ $message }}</p>
-                                    @enderror
-                                @endforeach
-                            </td>
-                        </tr>
-                    @endfor
-
-                    @foreach ($attendance->breakTimes->skip(2) as $index => $breakTime)
-                        {{-- 休憩3以降はデータがある場合のみ表示 --}}
-                        <tr class="table-row">
-                            <th class="table-label">休憩{{ $index + 3 }}</th>
-                            <td class="table-content">
-                                <div class="content-wrapper">
-                                    <input class="content-input" type="text" data-index="{{ $index + 2 }}"
-                                        data-type="start" value="{{ substr($breakTime->break_start ?? '', 11, 5) }}">
-                                    <p class="to">～</p>
-                                    <input class="content-input" type="text" data-index="{{ $index + 2 }}"
-                                        data-type="end" value="{{ substr($breakTime->break_end ?? '', 11, 5) }}">
-
-                                    <input class="content-input" type="hidden" name="break_start[]"
-                                        data-index="{{ $index + 2 }}" data-type="hidden_start"
-                                        value="{{ $breakTime->break_start }}">
-                                    <input class="content-input" type="hidden" name="break_end[]"
-                                        data-index="{{ $index + 2 }}" data-type="hidden_end"
-                                        value="{{ $breakTime->break_end }}">
-                                </div>
-                                @foreach (['break_start', 'break_end'] as $field)
-                                    @error("{$field}." . ($index + 2))
-                                        <p class="error-message">{{ $message }}</p>
-                                    @enderror
-                                @endforeach
-                            </td>
-                        </tr>
-                    @endforeach
+                                <!-- 実際に送信するdatetime値（hiddenフィールド） -->
+                                <input class="content-input" type="hidden" name="break_start[]"
+                                    data-index="{{ $index + 1 }}" data-type="hidden_start"
+                                    value="{{ $breakTime->break_start }}">
+                                <input class="content-input" type="hidden" name="break_end[]"
+                                    data-index="{{ $index + 1 }}" data-type="hidden_end"
+                                    value="{{ $breakTime->break_end }}">
+                            </div>
+                            @foreach (['break_start', 'break_end'] as $field)
+                                @error("{$field}." . ($index + 1))
+                                    <p class="error-message">{{ $message }}</p>
+                                @enderror
+                            @endforeach
+                        </td>
+                    </tr>
                 @endforeach
 
                 <tr class="table-row">
@@ -196,38 +161,6 @@
                         }
                     });
                 });
-
-            // 日付を選択するためのinputを設定
-            let dateWrapper = document.getElementById('date-wrapper');
-            let dateInput = document.getElementById('date-input');
-
-            // 日付表示部分をクリックしたときの処理
-            dateWrapper.addEventListener('click', function() {
-                dateInput.style.display = 'block'; // 日付入力フィールドを表示
-                dateInput.focus(); // フォーカスを当てる
-            });
-
-            // 日付が選択された後の処理
-            dateInput.addEventListener('change', function() {
-                let datePart = this.value; // 選択された日付をdatePartに更新
-                this.style.display = 'none'; // 日付入力フィールドを隠す
-
-                // 日付をフォーマットしてp要素を更新
-                let year = datePart.substring(0, 4);
-                let month = datePart.substring(5, 7);
-                let day = datePart.substring(8, 10);
-
-                // 年と日付のp要素を取得
-                let yearElement = dateWrapper.querySelector('.content-year');
-                let dateElement = dateWrapper.querySelector('.content-date');
-
-                // p要素の内容を更新
-                yearElement.textContent = year + '年';
-                dateElement.textContent = month + '月' + day + '日';
-
-                // current_dateのinputの値を更新
-                this.value = datePart;
-            });
         });
     </script>
 @endsection
