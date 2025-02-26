@@ -70,9 +70,6 @@ Route::middleware(['user'])->group(function () {
     Route::get('/attendance/{user_id}/{date}', [AttendanceController::class, 'edit'])->name('attendance.edit');
     Route::patch('/attendance/{user_id}/{date}', [AttendanceController::class, 'update'])->name('attendance.update');
 
-    // 勤怠詳細画面（承認待ち）
-    Route::get('/attendance/pending/{user_id}/{date}', [AttendanceController::class, 'show'])->name('attendance.show');
-
     // 申請一覧画面
     Route::get('/stamp_correction_request/list', [RequestController::class, 'index'])->name('stamp_correction_request.list.index');
 

@@ -44,6 +44,14 @@
         height: 92.5px;
     }
 
+    /* pending テーブル内容 */
+    .pending-table-content {
+        height: 92.5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .content-wrapper {
         display: flex;
         justify-content: center;
@@ -67,6 +75,7 @@
         width: 110px;
         height: 30px;
         padding: 0;
+        font-family: Inter;
         font-size: 16px;
         font-weight: 700;
         text-align: center;
@@ -75,16 +84,54 @@
         border-radius: 4px;
     }
 
+    /* 内容（日付） */
+    .date-input {
+        width: 220px;
+        height: 30px;
+        padding: 0;
+        font-family: Inter;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+        border: none;
+        border: solid 1px #e1e1e1;
+        border-radius: 4px;
+        appearance: none;
+    }
+
+    /* 既存のカレンダーアイコンの取消 */
+    .date-input::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+
     /* 内容（備考） */
     .content-textarea {
         width: 330px;
         height: 70px;
-        padding: 10px;
+        padding: 10px 10px 10px 30px;
+        font-family: Inter;
         font-size: 16px;
         font-weight: 700;
         border: none;
         border: solid 1px #e1e1e1;
         border-radius: 4px;
+    }
+
+    /* pending 内容 */
+    .pending-table-content-detail,
+    .pending-to {
+        width: 110px;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    /* pending 内容（名前）（備考） */
+    .pending-table-content-detail-name,
+    .pending-table-content-detail-text {
+        width: 330px;
+        text-align: left;
+        padding-left: 30px;
     }
 
     .form-submit {
@@ -100,8 +147,18 @@
         border-radius: 5px;
         background-color: black;
         color: white;
+        font-family: Inter;
         font-size: 22px;
         font-weight: 700;
+    }
+
+    /* pending 承認待ちのため修正はできません。 */
+    .pending-message {
+        text-align: right;
+        margin: 0;
+        color: rgba(255, 0, 0, 0.5);
+        font-size: 18px;
+        font-weight: 800;
     }
 
     /* エラーメッセージ */

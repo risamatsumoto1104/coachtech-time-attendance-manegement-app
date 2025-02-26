@@ -14,11 +14,16 @@
                 <p class="attendance-date" id="attendance-date">
                     {{ substr($date ?? '', 0, 4) }}年{{ substr($date ?? '', 5, 2) }}月{{ substr($date ?? '', 8, 2) }}日({{ $weekday }})
                 </p>
-                <p class="attendance-time" id="attendance-time">{{ substr($date ?? '', 11, 5) }}</p>
+                <p class="attendance-time" id="attendance-time">{{ substr($date ?? '', 11, 8) }}</p>
                 <form class="attendance-form" action="{{ route('attendance.store') }}" method="POST">
                     @csrf
                     <input class="submit-clock-in" type="submit" value="出勤">
                     <input name="clock_in" type="hidden" value="{{ $date }}">
+
+                    {{-- 隠しフィールド送信 --}}
+                    <input name="user_id" type="hidden" value="{{ $user->user_id }}">
+                    <input name="clock_out" type="hidden" value="null">
+                    <input name="remarks" type="hidden" value="null">
                 </form>
             </div>
         @elseif ($attendanceStatus == 'working')
@@ -28,7 +33,7 @@
                 <p class="attendance-date" id="attendance-date">
                     {{ substr($date ?? '', 0, 4) }}年{{ substr($date ?? '', 5, 2) }}月{{ substr($date ?? '', 8, 2) }}日({{ $weekday }})
                 </p>
-                <p class="attendance-time" id="attendance-time">{{ substr($date ?? '', 11, 5) }}</p>
+                <p class="attendance-time" id="attendance-time">{{ substr($date ?? '', 11, 8) }}</p>
                 <div class="form-group">
                     <form class="attendance-form" action="{{ route('attendance.store') }}" method="POST">
                         @csrf
@@ -49,7 +54,7 @@
                 <p class="attendance-date" id="attendance-date">
                     {{ substr($date ?? '', 0, 4) }}年{{ substr($date ?? '', 5, 2) }}月{{ substr($date ?? '', 8, 2) }}日({{ $weekday }})
                 </p>
-                <p class="attendance-time" id="attendance-time">{{ substr($date ?? '', 11, 5) }}</p>
+                <p class="attendance-time" id="attendance-time">{{ substr($date ?? '', 11, 8) }}</p>
                 <form class="attendance-form" action="{{ route('attendance.store') }}" method="POST">
                     @csrf
                     <input class="submit-break-end" type="submit" value="休憩戻">
@@ -63,7 +68,7 @@
                 <p class="attendance-date" id="attendance-date">
                     {{ substr($date ?? '', 0, 4) }}年{{ substr($date ?? '', 5, 2) }}月{{ substr($date ?? '', 8, 2) }}日({{ $weekday }})
                 </p>
-                <p class="attendance-time" id="attendance-time">{{ substr($date ?? '', 11, 5) }}</p>
+                <p class="attendance-time" id="attendance-time">{{ substr($date ?? '', 11, 8) }}</p>
                 <p class="attendance-massage">お疲れ様でした。</p>
             </div>
         @endif
@@ -85,7 +90,7 @@
             const weekday = weekdays[now.getDay()];
 
             document.getElementById("attendance-date").innerHTML = `${year}年${month}月${day}日(${weekday})`;
-            document.getElementById("attendance-time").innerHTML = `${hours}:${minutes}`;
+            document.getElementById("attendance-time").innerHTML = `${hours}:${minutes}:${seconds}`;
         }
 
         // ページ読み込み後にリアルタイム更新を開始

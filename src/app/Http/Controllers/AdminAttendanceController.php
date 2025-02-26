@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceRequest;
 use App\Models\Attendance;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,40 +26,47 @@ class AdminAttendanceController extends Controller
 
         // 休憩時間と勤務時間を計算
         $attendances->each(function ($attendance) {
-            // 出勤時間と退勤時間を秒に変換
-            $clockIn = strtotime($attendance->clock_in);
-            $clockOut = strtotime($attendance->clock_out);
+            // break_end が NULL でないかをチェック
+            if (!is_null($attendance->clock_out)) {
+                // 出勤時間と退勤時間を秒に変換
+                $clockIn = strtotime($attendance->clock_in);
+                $clockOut = strtotime($attendance->clock_out);
 
-            // 休憩時間を初期化
-            $secondsBreakTime = 0;
+                // 休憩時間を初期化
+                $secondsBreakTime = 0;
 
-            // 休憩時間を計算
-            foreach ($attendance->breakTimes as $breakTime) {
-                // 休憩時間を秒に変換
-                $breakStart = strtotime($breakTime->break_start);
-                $breakEnd = strtotime($breakTime->break_end);
+                // 休憩時間を計算
+                foreach ($attendance->breakTimes as $breakTime) {
+                    // 休憩時間を秒に変換
+                    $breakStart = strtotime($breakTime->break_start);
+                    $breakEnd = strtotime($breakTime->break_end);
 
-                $secondsBreakTime += ($breakEnd - $breakStart);
+                    $secondsBreakTime += ($breakEnd - $breakStart);
+                }
+
+                // 勤務時間を計算
+                $secondsWorkTime = ($clockOut - $clockIn - $secondsBreakTime);
+
+                // 休憩時間と勤務時間を秒から時間に戻す
+                $hoursBreakTime = $secondsBreakTime / 3600;
+                $hoursWorkTime = $secondsWorkTime / 3600;
+
+                // 休憩時間を時間と分に分ける
+                $breakHours = floor($hoursBreakTime);
+                $breakMinutes = round(($hoursBreakTime - $breakHours) * 60);
+
+                // 勤務時間を時間と分に分ける
+                $workHours = floor($hoursWorkTime);
+                $workMinutes = round(($hoursWorkTime - $workHours) * 60);
+
+                // h:i形式に変換して保存
+                $attendance->totalBreakTime = sprintf("%02d:%02d", $breakHours, $breakMinutes);
+                $attendance->totalWorkTime = sprintf("%02d:%02d", $workHours, $workMinutes);
+            } else {
+                // 退勤時間または休憩終了時間が無い場合
+                $attendance->totalWorkTime = '00:00';
+                $attendance->totalBreakTime = '00:00';
             }
-
-            // 勤務時間を計算
-            $secondsWorkTime = ($clockOut - $clockIn - $secondsBreakTime);
-
-            // 休憩時間と勤務時間を秒から時間に戻す
-            $hoursBreakTime = $secondsBreakTime / 3600;
-            $hoursWorkTime = $secondsWorkTime / 3600;
-
-            // 休憩時間を時間と分に分ける
-            $breakHours = floor($hoursBreakTime);
-            $breakMinutes = round(($hoursBreakTime - $breakHours) * 60);
-
-            // 勤務時間を時間と分に分ける
-            $workHours = floor($hoursWorkTime);
-            $workMinutes = round(($hoursWorkTime - $workHours) * 60);
-
-            // h:i形式に変換して保存
-            $attendance->totalBreakTime = sprintf("%02d:%02d", $breakHours, $breakMinutes);
-            $attendance->totalWorkTime = sprintf("%02d:%02d", $workHours, $workMinutes);
         });
 
         return view('admin.attendance.index', compact('currentDateFormatted', 'attendances'));
@@ -73,9 +79,6 @@ class AdminAttendanceController extends Controller
         $date = $request->route('date');
         $userId = $request->route('user_id');
 
-        // ユーザー情報を取得
-        $user = User::where('user_id', $userId)->first();
-
         // 日付を'Y-m-d'形式で文字列にフォーマット
         $currentDate = new \DateTime($date);
         $currentDateFormatted = $currentDate->format('Y-m-d');
@@ -84,7 +87,7 @@ class AdminAttendanceController extends Controller
             // user_id が一致するものを取得
             ->where('user_id', $userId)
             // clock_inの日付 が一致するものを取得
-            ->whereDate('clock_in', $date)
+            ->whereDate('clock_in', $currentDateFormatted)
             ->get();
 
         return view('admin.attendance.edit', compact('userId', 'currentDateFormatted', 'attendances'));

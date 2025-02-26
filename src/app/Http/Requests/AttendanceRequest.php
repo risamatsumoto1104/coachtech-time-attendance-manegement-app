@@ -36,13 +36,13 @@ class AttendanceRequest extends FormRequest
     {
         return [
             // 入力必須
-            'clock_in.required' => '出勤時間を入力してください。。',
-            'clock_out.required' => '退勤時間を入力してください。。',
-            'remarks.required' => '備考を記入してください。。',
+            'clock_in.required' => '出勤時間を入力してください。',
+            'clock_out.required' => '退勤時間を入力してください。',
+            'remarks.required' => '備考を記入してください。',
             // 退勤時間より前
             'clock_in.before' => '出勤時間もしくは退勤時間が不適切な値です。',
             // 出勤時間より後
-            'clock_out.after' => '出勤時間もしくは退勤時間が不適切な値です。。',
+            'clock_out.after' => '出勤時間もしくは退勤時間が不適切な値です。',
             // 出勤時間以降
             'break_start.*.after_or_equal' => '休憩時間が勤務時間外です。休憩開始時刻を出勤時間以降に変更してください。',
             'break_end.*.after_or_equal' => '休憩時間が勤務時間外です。休憩終了時刻を出勤時間以降に変更してください。',

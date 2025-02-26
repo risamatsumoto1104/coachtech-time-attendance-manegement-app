@@ -10,17 +10,6 @@
 
         <h2 class="attendance-title">勤怠詳細</h2>
 
-        @if (session('success'))
-            <div>
-                {{ session('success') }}
-            </div>
-        @endif
-        @if (session('error'))
-            <div>
-                {{ session('error') }}
-            </div>
-        @endif
-
         <form class="attendance-form"
             action="{{ route('admin.attendance.update', ['user_id' => $userId, 'date' => $currentDateFormatted]) }}"
             method="POST">
