@@ -11,8 +11,10 @@
         <h2 class="request-title">申請一覧</h2>
 
         <div class="request-list">
-            <a class="request-pending" href="">承認待ち</a>
-            <a class="request-approval" href="">承認済み</a>
+            <a class="request-pending"
+                href="{{ route('stamp_correction_request.list.index', ['tab' => 'pending']) }}">承認待ち</a>
+            <a class="request-approval"
+                href="{{ route('stamp_correction_request.list.index', ['tab' => 'approved']) }}">承認済み</a>
         </div>
 
         <table class="request-table">
@@ -24,16 +26,39 @@
                 <th class="table-label">申請日時</th>
                 <th class="table-label">詳細</th>
             </tr>
-            <tr class="table-row-content">
-                <td class="table-content">認証待ち</td>
-                <td class="table-content">テスト太郎</td>
-                <td class="table-content">2023/06/01</td>
-                <td class="table-content">遅延のため</td>
-                <td class="table-content">2023/06/02</td>
-                <td class="table-content">
-                    <a class="detail-link" href="">詳細</a>
-                </td>
-            </tr>
+            @if ($tab === 'pending')
+                @foreach ($attendances as $attendance)
+                    @if ($attendance->stampCorrectionRequest && $attendance->stampCorrectionRequest->status === 'pending')
+                        <tr class="table-row-content">
+                            <td class="table-content">承認待ち</td>
+                            <td class="table-content">{{ $attendance->user->name }}</td>
+                            <td class="table-content">{{ $attendance->formatted_clock_in }}</td>
+                            <td class="table-content">{{ $attendance->remarks }}</td>
+                            <td class="table-content">{{ $attendance->formatted_created_at }}</td>
+                            <td class="table-content">
+                                <a class="detail-link"
+                                    href="{{ route('attendance.edit', ['user_id' => $attendance->user->user_id, 'date' => $attendance->date]) }}">詳細</a>
+                            </td>
+                        </tr>
+                    @endif
+                @endforeach
+            @elseif($tab === 'approved')
+                @foreach ($attendances as $attendance)
+                    @if ($attendance->stampCorrectionRequest && $attendance->stampCorrectionRequest->status === 'approved')
+                        <tr class="table-row-content">
+                            <td class="table-content">承認済み</td>
+                            <td class="table-content">{{ $attendance->user->name }}</td>
+                            <td class="table-content">{{ $attendance->formatted_clock_in }}</td>
+                            <td class="table-content">{{ $attendance->remarks }}</td>
+                            <td class="table-content">{{ $attendance->formatted_created_at }}</td>
+                            <td class="table-content">
+                                <a class="detail-link"
+                                    href="{{ route('attendance.edit', ['user_id' => $attendance->user->user_id, 'date' => $attendance->date]) }}">詳細</a>
+                            </td>
+                        </tr>
+                    @endif
+                @endforeach
+            @endif
         </table>
     </div>
 @endsection

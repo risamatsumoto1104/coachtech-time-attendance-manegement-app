@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\StampCorrectionRequest;
+use App\Models\Attendance;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminRequestController extends Controller
@@ -10,26 +11,81 @@ class AdminRequestController extends Controller
     // 申請一覧画面を表示（管理者）
     public function index(Request $request)
     {
-        // タブの状態
-        $tab = $request->get('pending', 'approved');
+        // 'user' を全て取得
+        $users = User::where('role', 'user')->get();
 
-        // status と一致するものを取得
-        $stampCorrectionRequests = StampCorrectionRequest::with('user', 'attendance')
-            ->where('status', $tab)
+        // ユーザーIDの配列を取得
+        $userIds = $users->pluck('user_id')->toArray();
+
+        $attendances = Attendance::with('user', 'stampCorrectionRequest')
+            ->whereIn('user_id', $userIds)
             ->get();
 
-        return view('admin.request.index', compact('tab', 'stampCorrectionRequests'));
+        $attendances->each(function ($attendance) {
+            $clockIn = $attendance->clock_in;
+            $clockInDateTime = new \DateTime($clockIn);
+            $attendance->formatted_clock_in = $clockInDateTime->format('Y/m/d');
+            $attendance->date = $clockInDateTime->format('Y-m-d');
+
+            if ($attendance->stampCorrectionRequest) {
+                $requestCreatedAt = $attendance->stampCorrectionRequest->created_at;
+                $requestCreatedAtDateTime = new \DateTime($requestCreatedAt);
+                $attendance->formatted_created_at = $requestCreatedAtDateTime->format('Y/m/d');
+            }
+        });
+
+        // 名前順、申請日時順に並び替え
+        $attendances = $attendances->sortBy(function ($attendance) {
+            return [$attendance->user->name, $attendance->formatted_created_at];
+        });
+
+        $tab = $request->get('tab', 'pending'); //デフォルト
+
+        return view('admin.request.index', compact('attendances', 'tab'));
     }
 
     // 修正申請承認画面の表示・更新（管理者）
     public function edit(Request $request)
     {
-        return view('admin.request.edit');
+        // ルートから取得
+        $date = $request->route('date');
+        $userId = $request->route('user_id');
+
+        // 日付を'Y-m-d'形式で文字列にフォーマット
+        $currentDate = new \DateTime($date);
+        $currentDateFormatted = $currentDate->format('Y-m-d');
+
+        $attendances = Attendance::with('user', 'breakTimes')
+            // user_id が一致するものを取得
+            ->where('user_id', $userId)
+            // clock_inの日付 が一致するものを取得
+            ->whereDate('clock_in', $currentDateFormatted)
+            ->get();
+
+        foreach ($attendances as $attendance) {
+            $stampRequest = $attendance->stampCorrectionRequest;
+        }
+
+        return view('admin.request.edit', compact('userId', 'currentDateFormatted', 'attendances', 'stampRequest'));
     }
 
     //  修正申請承認画面の保存（管理者）
     public function update(Request $request)
     {
+        dd('保存処理');
+        foreach ($attendances as $attendance) {
+            $stampRequest = $attendance->stampCorrectionRequest;
+            if ($stampRequest) {
+                if ($stampRequest->status === 'pending') {
+                    if ($request->input('approved')) {
+                        $stampRequest->update([
+                            'status' => 'approved',
+                        ]);
+                    }
+                }
+            }
+        }
+
         return view('admin.request.edit');
     }
 }

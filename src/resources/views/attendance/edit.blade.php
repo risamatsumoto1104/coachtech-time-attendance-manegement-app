@@ -99,7 +99,7 @@
                                         value="{{ $breakTime->break_end }}">
                                 </div>
                                 @foreach (['break_start', 'break_end'] as $field)
-                                    @error("{$field}." . ($index + 1))
+                                    @error("{$field}." . $index)
                                         <p class="error-message">{{ $message }}</p>
                                     @enderror
                                 @endforeach
@@ -131,45 +131,54 @@
                 <tr class="table-row">
                     <th class="table-label">名前</th>
                     <td class="pending-table-content">
-                        <p class="pending-table-content-detail-name">山田太郎</p>
+                        @foreach ($attendances as $attendance)
+                            <p class="pending-table-content-detail-name">{{ $attendance->user->name }}</p>
+                        @endforeach
                     </td>
                 </tr>
+
                 <tr class="table-row">
                     <th class="table-label">日付</th>
                     <td class="pending-table-content">
-                        <p class="pending-table-content-detail">2023年</p>
+                        <p class="pending-table-content-detail">{{ substr($currentDateFormatted ?? '', 0, 4) }}年</p>
                         <p class="pending-to"></p>
-                        <p class="pending-table-content-detail">6月1日</p>
+                        <p class="pending-table-content-detail">
+                            {{ substr($currentDateFormatted ?? '', 5, 2) }}月{{ substr($currentDateFormatted ?? '', 8, 2) }}日
+                        </p>
                     </td>
                 </tr>
+
                 <tr class="table-row">
                     <th class="table-label">出勤・退勤</th>
                     <td class="pending-table-content">
-                        <p class="pending-table-content-detail">9:00</p>
-                        <p class="pending-to">～</p>
-                        <p class="pending-table-content-detail">20:00</p>
+                        @foreach ($attendances as $index => $attendance)
+                            <p class="pending-table-content-detail">{{ substr($attendance->clock_in ?? '', 11, 5) }}</p>
+                            <p class="pending-to">～</p>
+                            <p class="pending-table-content-detail">{{ substr($attendance->clock_out ?? '', 11, 5) }}</p>
+                        @endforeach
                     </td>
                 </tr>
-                <tr class="table-row">
-                    <th class="table-label">休憩</th>
-                    <td class="pending-table-content">
-                        <p class="pending-table-content-detail">12:00</p>
-                        <p class="pending-to">～</p>
-                        <p class="pending-table-content-detail">13:00</p>
-                    </td>
-                </tr>
-                <tr class="table-row">
-                    <th class="table-label">休憩2</th>
-                    <td class="pending-table-content">
-                        <p class="pending-table-content-detail">18:00</p>
-                        <p class="pending-to">～</p>
-                        <p class="pending-table-content-detail">18:30</p>
-                    </td>
-                </tr>
+
+                @foreach ($attendance->breakTimes as $index => $breakTime)
+                    <tr class="table-row">
+                        <th class="table-label">休憩{{ $index + 1 }}</th>
+                        <td class="pending-table-content">
+                            <p class="pending-table-content-detail">{{ substr($breakTime->break_start ?? '', 11, 5) }}
+                            </p>
+                            <p class="pending-to">～</p>
+                            <p class="pending-table-content-detail">{{ substr($breakTime->break_end ?? '', 11, 5) }}
+                            </p>
+                        </td>
+                    </tr>
+                @endforeach
+
                 <tr class="table-row">
                     <th class="table-label">備考</th>
                     <td class="pending-table-content">
-                        <p class="pending-table-content-detail-text">電車遅延の為</p>
+                        @foreach ($attendances as $attendance)
+                            <p class="pending-table-content-detail-text">{{ $attendance->remarks ?? '' }}
+                            </p>
+                        @endforeach
                     </td>
                 </tr>
             </table>

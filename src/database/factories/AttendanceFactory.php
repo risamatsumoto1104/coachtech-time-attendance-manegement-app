@@ -60,6 +60,11 @@ class AttendanceFactory extends Factory
             // break_end は break_start から1時間後
             $breakEnd = (clone $breakStart)->modify('+1 hour');
 
+            // break_end が clock_out を超えないように修正
+            if ($breakEnd > $clockOut) {
+                $breakEnd = $clockOut; // 退勤時間と同じに設定
+            }
+
             // 秒を切り上げる処理
             $roundUpBreakStart = $this->roundUpToNextMinute($breakStart);
             $roundUpBreakEnd = $this->roundUpToNextMinute($breakEnd);

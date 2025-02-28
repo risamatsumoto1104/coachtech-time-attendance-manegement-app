@@ -98,7 +98,7 @@
                                     value="{{ $breakTime->break_end }}">
                             </div>
                             @foreach (['break_start', 'break_end'] as $field)
-                                @error("{$field}." . ($index + 1))
+                                @error("{$field}." . $index)
                                     <p class="error-message">{{ $message }}</p>
                                 @enderror
                             @endforeach

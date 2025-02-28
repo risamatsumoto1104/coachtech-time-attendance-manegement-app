@@ -334,12 +334,19 @@ class AttendanceController extends Controller
             ->whereDate('clock_in', $currentDateFormatted)
             ->get();
 
+        // フラグを事前に計算
+        $hasPendingRequest = false;
+        $hasApprovedRequest = false;
+
         foreach ($attendances as $attendance) {
             $stampRequest = $attendance->stampCorrectionRequest;
-            // `stampCorrectionRequest` が存在し、status が `pending` かどうか判定
-            $hasPendingRequest = $stampRequest && $stampRequest->status === 'pending';
-            // `stampCorrectionRequest` が存在し、status が `approved` かどうか判定
-            $hasApprovedRequest = $stampRequest && $stampRequest->status === 'approved';
+            if ($stampRequest) {
+                if ($stampRequest->status === 'pending') {
+                    $hasPendingRequest = true;
+                } elseif ($stampRequest->status === 'approved') {
+                    $hasApprovedRequest = true;
+                }
+            }
         }
 
         return view('attendance.edit', compact('userId', 'currentDateFormatted', 'attendances', 'hasPendingRequest', 'hasApprovedRequest'));
@@ -463,7 +470,6 @@ class AttendanceController extends Controller
             // 通常の日付を使用
             // 複数のテーブルをまとめて更新知るため、トランザクションを使用
             DB::beginTransaction();
-
             try {
                 foreach ($attendances as $attendance) {
 

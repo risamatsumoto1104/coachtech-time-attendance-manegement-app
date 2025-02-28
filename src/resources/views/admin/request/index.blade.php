@@ -27,32 +27,36 @@
                 <th class="table-label">詳細</th>
             </tr>
             @if ($tab === 'pending')
-                @foreach ($stampCorrectionRequests as $stampCorrectionRequest)
-                    <tr class="table-row-content">
-                        <td class="table-content">{{ $stampCorrectionRequest->status }}</td>
-                        <td class="table-content">{{ $stampCorrectionRequest->user->name }}</td>
-                        <td class="table-content">{{ $stampCorrectionRequest->attendance->created_at }}</td>
-                        <td class="table-content">{{ $stampCorrectionRequest->attendance->remarks }}</td>
-                        <td class="table-content">{{ $stampCorrectionRequest->created_at }}</td>
-                        <td class="table-content">
-                            <a class="detail-link"
-                                href="{{ route('admin.stamp_correction_request.approve.edit', ['request_id' => $stampCorrectionRequest->request_id]) }}">詳細</a>
-                        </td>
-                    </tr>
+                @foreach ($attendances as $attendance)
+                    @if ($attendance->stampCorrectionRequest && $attendance->stampCorrectionRequest->status === 'pending')
+                        <tr class="table-row-content">
+                            <td class="table-content">承認待ち</td>
+                            <td class="table-content">{{ $attendance->user->name }}</td>
+                            <td class="table-content">{{ $attendance->formatted_clock_in }}</td>
+                            <td class="table-content">{{ $attendance->remarks }}</td>
+                            <td class="table-content">{{ $attendance->formatted_created_at }}</td>
+                            <td class="table-content">
+                                <a class="detail-link"
+                                    href="{{ route('admin.stamp_correction_request.approve.edit', ['user_id' => $attendance->user->user_id, 'date' => $attendance->date]) }}">詳細</a>
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             @elseif($tab === 'approved')
-                @foreach ($stampCorrectionRequests as $stampCorrectionRequest)
-                    <tr class="table-row-content">
-                        <td class="table-content">{{ $stampCorrectionRequest->status }}</td>
-                        <td class="table-content">{{ $stampCorrectionRequest->user->name }}</td>
-                        <td class="table-content">{{ $stampCorrectionRequest->attendance->created_at }}</td>
-                        <td class="table-content">{{ $stampCorrectionRequest->attendance->remarks }}</td>
-                        <td class="table-content">{{ $stampCorrectionRequest->created_at }}</td>
-                        <td class="table-content">
-                            <a class="detail-link"
-                                href="{{ route('admin.stamp_correction_request.approve.edit', ['request_id' => $stampCorrectionRequest->request_id]) }}">詳細</a>
-                        </td>
-                    </tr>
+                @foreach ($attendances as $attendance)
+                    @if ($attendance->stampCorrectionRequest && $attendance->stampCorrectionRequest->status === 'approved')
+                        <tr class="table-row-content">
+                            <td class="table-content">承認済み</td>
+                            <td class="table-content">{{ $attendance->user->name }}</td>
+                            <td class="table-content">{{ $attendance->formatted_clock_in }}</td>
+                            <td class="table-content">{{ $attendance->remarks }}</td>
+                            <td class="table-content">{{ $attendance->formatted_created_at }}</td>
+                            <td class="table-content">
+                                <a class="detail-link"
+                                    href="{{ route('admin.stamp_correction_request.approve.edit', ['user_id' => $attendance->user->user_id, 'date' => $attendance->date]) }}">詳細</a>
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             @endif
         </table>
