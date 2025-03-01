@@ -62,3 +62,22 @@
         </table>
     </div>
 @endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const requestPending = document.querySelector('.request-pending');
+            const requestApproval = document.querySelector('.request-approval');
+
+            // URLのクエリパラメータに基づいてアクティブリンクを設定
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('tab') === 'approved') {
+                requestApproval.classList.add('active-link');
+                requestPending.classList.remove('active-link');
+            } else {
+                requestPending.classList.add('active-link');
+                requestApproval.classList.remove('active-link');
+            }
+        });
+    </script>
+@endsection

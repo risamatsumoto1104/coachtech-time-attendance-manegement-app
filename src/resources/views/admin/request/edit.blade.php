@@ -76,7 +76,7 @@
                         <input class="submit-button" type="submit" value="承認">
 
                         {{-- 実際に送信 --}}
-                        <input class="submit-button" name=user_id type="hidden" value="{{ $userId }}">
+                        <input class="submit-button" name=user_id type="hidden" value="{{ $attendance->user_id }}">
                         <input class="submit-button" name=attendance_id type="hidden"
                             value="{{ $attendance->attendance_id }}">
                         <input class="submit-button" name=status type="hidden" value="approved">

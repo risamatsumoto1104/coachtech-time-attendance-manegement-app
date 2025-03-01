@@ -72,20 +72,34 @@ class AdminRequestController extends Controller
     //  修正申請承認画面の保存（管理者）
     public function update(Request $request)
     {
-        dd('保存処理');
-        foreach ($attendances as $attendance) {
-            $stampRequest = $attendance->stampCorrectionRequest;
+        $userId = $request->input('user_id');
+        $attendanceId = $request->input('attendance_id');
+        $date = $request->route('date');
+
+        $attendance = Attendance::where('user_id', $userId)
+            ->whereDate('clock_in', $date)
+            ->first();
+
+        if ($attendance) {
+            $stampRequest = $attendance->stampCorrectionRequest()
+                ->where('attendance_id', $attendanceId)
+                ->first();
+
             if ($stampRequest) {
                 if ($stampRequest->status === 'pending') {
-                    if ($request->input('approved')) {
+                    if ($request->input('status')) {
                         $stampRequest->update([
                             'status' => 'approved',
                         ]);
+
+                        $stampRequest->refresh();
+
+                        return redirect()->route('admin.stamp_correction_request.list.index', ['tab' => 'approved']);
                     }
+                } else {
+                    return redirect()->back()->withErrors(['error' => '保存に失敗しました。']);
                 }
             }
         }
-
-        return view('admin.request.edit');
     }
 }

@@ -32,6 +32,12 @@
         margin: 0 40px;
     }
 
+    /* クリックされたリンクのスタイル（アクティブリンク） */
+    .request-pending.active-link,
+    .request-approval.active-link {
+        font-weight: 700;
+    }
+
     /* テーブル */
     .request-table {
         width: 100%;
