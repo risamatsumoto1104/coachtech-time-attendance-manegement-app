@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
 
         // 各ユーザーに対して勤怠データを作成
         $users->each(function ($user) {
-            Attendance::factory(3)->create(['user_id' => $user->user_id]);
+            Attendance::factory(2)->create(['user_id' => $user->user_id]);
         });
     }
 }

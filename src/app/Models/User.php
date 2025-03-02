@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,13 +10,19 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Models\Attendance;
 use App\Models\BreakTime;
 use App\Models\StampCorrectionRequest;
+use App\Notifications\CustomVerifyEmailNotification;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
     // 主キー名を変更
     protected $primaryKey = 'user_id';
+
+    public function getKey()
+    {
+        return $this->user_id;  // user_id を返す
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -48,6 +54,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // メール認証用の通知をカスタマイズ
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmailNotification());
+    }
 
     // role カラムが「admin」なら管理者
     public function getIsAdminAttribute()

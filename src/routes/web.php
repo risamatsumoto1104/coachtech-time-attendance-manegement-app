@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\AdminRequestController;
 use App\Http\Controllers\AdminStaffController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RequestController;
@@ -20,14 +21,12 @@ Route::middleware('guest')->group(function () {
 });
 
 
-// // メール認証通知の表示と送信
-// Route::get('/email/verify', [AuthenticatedSessionController::class, 'showVerificationNotice'])->name('verification.notice');
-// // メール内のリンクをクリックしたときにアクセスされるもの
-// Route::middleware('signed')->group(function () {
-//     Route::get('/email/verify/{user_id}/{hash}', [AuthenticatedSessionController::class, 'verify'])->name('verification.verify');
-// });
-// // メール認証再送信
-// Route::post('/email/resend', [AuthenticatedSessionController::class, 'resendVerificationEmail'])->name('verification.send');
+// メール内のリンクをクリックしたときにアクセスされるもの
+Route::get('/email/verify/{user_id}/{hash}', [VerifyEmailController::class, 'verify'])
+    ->middleware('signed') // 署名付き URL を確認
+    ->name('email.verify');
+// メール認証再送信
+Route::post('/email/resend', [VerifyEmailController::class, 'resendVerificationEmail']);
 
 
 // 管理者

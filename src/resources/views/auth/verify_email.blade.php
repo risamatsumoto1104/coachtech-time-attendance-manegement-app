@@ -13,12 +13,11 @@
             メール認証を完了してください
         </p>
 
-        <form class="guidance-form" action="" method="POST">
-            @csrf
+        <form class="guidance-form" action="http://localhost:8025/" method="GET">
             <button class="guidance-button" type="submit">認証はこちらから</button>
         </form>
 
-        <form class="email-verification-form" action="" method="POST">
+        <form class="email-verification-form" action="{{ url('/email/resend') }}" method="POST">
             @csrf
             <button class="email-verification-button" type="submit">認証メールを再送する</button>
         </form>
