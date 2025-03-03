@@ -16,8 +16,8 @@ class AttendanceFactory extends Factory
      */
     public function definition()
     {
-        // 過去一週間の開始時刻を取得（7日前から今日まで）
-        $weekStart = now()->subDays(7)->startOfDay();
+        // 過去一週間の開始時刻を取得（2日前から今日まで）
+        $weekStart = now()->subDays(2)->startOfDay();
         $today = now()->endOfDay();
 
         // 過去一週間の日付を配列に取得
@@ -26,8 +26,37 @@ class AttendanceFactory extends Factory
             $dates[] = $date->format('Y-m-d');
         }
 
-        // 配列からランダムに日付を選択
-        $randomDate = $dates[array_rand($dates)]; // ランダムな日付を取得
+        // セッションに格納された選ばれた日付を取得
+        $selectedDates = session('selected_dates', []); // セッションから取得。まだ選ばれていない場合は空配列
+
+        // セッションが空の場合、初期値を設定（ダミーの日付を追加）
+        if (empty($selectedDates)) {
+            $selectedDates = ['2025-01-01'];  // ダミーの日付を設定
+            session(['selected_dates' => $selectedDates]);  // セッションに保存
+        }
+
+        // 重複しない日付をランダムに選び、選ばれた日付を配列から削除
+        $availableDates = array_diff($dates, $selectedDates); // 既に選ばれた日付を除外
+
+        if (!empty($availableDates)) {
+            // ランダムな日付を選択
+            $randomDate = $availableDates[array_rand($availableDates)]; // ランダムに選ぶ
+
+            // 選ばれた日付を保存
+            $selectedDates[] = $randomDate;
+
+            // セッションに保存
+            session(['selected_dates' => $selectedDates]);
+        } else {
+            // すべての日付が選ばれている場合、今日の日付にリセットする
+            $randomDate = date('Y-m-d'); // 今日の日付を設定
+
+            // 選ばれた日付を保存
+            $selectedDates[] = $randomDate;
+
+            // セッションに保存
+            session(['selected_dates' => $selectedDates]);
+        }
 
         // clock_in を今日の開始時刻から終了時刻の間でランダムに設定
         $clockIn = $this->faker->dateTimeBetween($randomDate . '00:00:00', $randomDate . ' 14:59:59');

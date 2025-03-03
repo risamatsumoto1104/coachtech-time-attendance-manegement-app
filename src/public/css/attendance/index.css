@@ -125,4 +125,125 @@
 
 /* タブレットのスタイル */
 @media (min-width: 768px) and (max-width: 850px) {
+    .attendance-container {
+        width: 700px;
+        margin: 0 auto;
+        font-family: Inter;
+    }
+
+    /* タイトル */
+    .attendance-title {
+        font-size: 30px;
+        font-weight: 700;
+        border-left: solid 8px black;
+        padding-left: 20px;
+        margin: 80px 0 0 0;
+    }
+
+    /* 日付ナビ全体 */
+    .attendance-nav {
+        display: flex;
+        justify-content: space-between;
+        height: 60px;
+        align-items: center;
+        background-color: white;
+        border-radius: 10px;
+        margin: 30px 0;
+    }
+
+    .attendance-nav-previous,
+    .attendance-nav-next {
+        display: flex;
+        align-items: center;
+        color: #737373;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .attendance-nav-calendar {
+        display: flex;
+        align-items: center;
+        width: 155px;
+    }
+
+    /* 前日矢印アイコン */
+    .nav-icon-previous {
+        width: 20px;
+        height: 15px;
+        filter: invert(45%) sepia(0%) saturate(0%) hue-rotate(0deg);
+        margin: 0 10px 0 30px;
+    }
+
+    /* カレンダーアイコン */
+    .nav-icon-calendar {
+        width: 25px;
+        height: 25px;
+    }
+
+    /* 日付入力欄 */
+    .input-calendar {
+        font-family: Inter;
+        font-size: 20px;
+        font-weight: 700;
+        border: none;
+        padding-left: 10px;
+    }
+
+    /* 既存のカレンダーアイコンの取消 */
+    .input-calendar::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    /* 翌日矢印アイコン */
+    .nav-icon-next {
+        width: 20px;
+        height: 15px;
+        filter: invert(45%) sepia(0%) saturate(0%) hue-rotate(0deg);
+        transform: rotate(180deg);
+        margin: 0 30px 0 10px;
+    }
+
+    /* テーブル */
+    .attendance-table {
+        width: 100%;
+        background-color: white;
+        font-size: 16px;
+        font-weight: 700;
+        color: #737373;
+        text-align: center;
+        border-radius: 10px;
+    }
+
+    /* テーブル行 */
+    .table-row-title,
+    .table-row-content {
+        height: 45px;
+        border-bottom: solid 3px #e1e1e1;
+    }
+
+    .table-label,
+    .table-content {
+        width: 125px;
+    }
+
+    /* テーブル（日付） */
+    .table-label:first-of-type,
+    .table-content:first-of-type {
+        width: 200px;
+        padding-left: 50px;
+        text-align: left;
+    }
+
+    /* テーブル（詳細） */
+    .table-label:last-of-type,
+    .table-content:last-of-type {
+        width: 200px;
+    }
+
+    /* 詳細ボタン */
+    .detail-link {
+        text-decoration: none;
+        color: black;
+    }
 }

@@ -77,4 +77,77 @@
 
 /* タブレットのスタイル */
 @media (min-width: 768px) and (max-width: 850px) {
+    .request-container {
+        width: 700px;
+        margin: 0 auto;
+        font-family: Inter;
+    }
+
+    /* タイトル */
+    .request-title {
+        font-size: 30px;
+        font-weight: 700;
+        border-left: solid 8px black;
+        padding-left: 20px;
+        margin: 80px 0 60px 0;
+    }
+
+    /* 選択タブ */
+    .request-list {
+        border-bottom: solid 1px black;
+        margin-bottom: 40px;
+        padding-bottom: 10px;
+        font-size: 16px;
+        font-weight: 400;
+    }
+
+    /* 承認待ち、承認済み */
+    .request-pending,
+    .request-approval {
+        text-decoration: none;
+        color: black;
+        margin: 0 40px;
+    }
+
+    /* クリックされたリンクのスタイル（アクティブリンク） */
+    .request-pending.active-link,
+    .request-approval.active-link {
+        font-weight: 700;
+    }
+
+    /* テーブル */
+    .request-table {
+        width: 100%;
+        background-color: white;
+        font-size: 16px;
+        font-weight: 700;
+        color: #737373;
+        text-align: left;
+        border-radius: 10px;
+    }
+
+    /* テーブル行 */
+    .table-row-title,
+    .table-row-content {
+        height: 45px;
+        border-bottom: solid 3px #e1e1e1;
+    }
+
+    /* テーブル（状態） */
+    .table-label:first-of-type,
+    .table-content:first-of-type {
+        padding-left: 30px;
+    }
+
+    /* テーブル（詳細） */
+    .table-label:last-of-type,
+    .table-content:last-of-type {
+        width: 60px;
+    }
+
+    /* 詳細ボタン */
+    .detail-link {
+        text-decoration: none;
+        color: black;
+    }
 }

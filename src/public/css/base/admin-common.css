@@ -1,5 +1,10 @@
 /* デスクトップパソコンのスタイル */
 @media (min-width: 1400px) and (max-width: 1540px) {
+    /* body全体 */
+    .page-wrapper {
+        background-color: #f0eff2;
+    }
+
     /* ヘッダー背景 */
     .header-container {
         display: flex;
@@ -43,13 +48,61 @@
         font-weight: 700;
         padding: 0;
     }
-
-    /* body全体 */
-    .page-wrapper {
-        background-color: #f0eff2;
-    }
 }
 
 /* タブレットのスタイル */
 @media (min-width: 768px) and (max-width: 850px) {
+    /* body全体 */
+    .page-wrapper {
+        background-color: #f0eff2;
+    }
+
+    /* ヘッダー背景 */
+    .header-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: black;
+        height: 60px;
+    }
+
+    /* ヘッダーロゴ */
+    .header-logo-container {
+        margin: 0 0 0 20px;
+    }
+
+    .header-logo {
+        width: 250px;
+    }
+
+    /* 右側ナビ */
+    .nav-list {
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-item {
+        margin: 0 25px 0 0;
+    }
+
+    /* 右側ナビ（勤怠一覧、スタッフ一覧、申請一覧） */
+    .nav-link {
+        text-decoration: none;
+        color: white;
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    /* 右側ナビ（ログアウト） */
+    .nav-button {
+        background: none;
+        border: none;
+        color: white;
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 0;
+    }
 }

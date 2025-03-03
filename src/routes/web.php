@@ -7,6 +7,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\RequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,20 +18,13 @@ Route::middleware('guest')->group(function () {
     Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])->name('admin.login');
 
     // ログイン（一般ユーザー）
+    Route::post('/register', [RegisterController::class, 'registered'])->name('user.register');
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('user.login');
 });
 
 
-// メール内のリンクをクリックしたときにアクセスされるもの
-Route::get('/email/verify/{user_id}/{hash}', [VerifyEmailController::class, 'verify'])
-    ->middleware('signed') // 署名付き URL を確認
-    ->name('email.verify');
-// メール認証再送信
-Route::post('/email/resend', [VerifyEmailController::class, 'resendVerificationEmail']);
-
-
 // 管理者
-Route::middleware('admin')->group(function () {
+Route::middleware('verified_admin')->group(function () {
     // 勤怠一覧画面
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.list.index');
 
@@ -39,6 +33,9 @@ Route::middleware('admin')->group(function () {
 
     // スタッフ別勤怠一覧画面
     Route::get('/admin/attendance/staff/{user_id}', [AdminStaffController::class, 'show'])->name('admin.attendance.staff.show');
+
+    // エクスポート
+    Route::get('/admin/attendance/staff/export-csv/{user_id}', [AdminStaffController::class, 'exportCsv'])->name('admin.attendance.staff.export.csv');
 
     // 勤怠詳細画面
     Route::get('/admin/attendance/{user_id}/{date}', [AdminAttendanceController::class, 'edit'])->name('admin.attendance.edit');
@@ -56,8 +53,25 @@ Route::middleware('admin')->group(function () {
 });
 
 
-// 一般ユーザー
+// 一般ユーザー(ログインのみ)
 Route::middleware(['user'])->group(function () {
+    // ログインユーザーのみがアクセスできるルート
+    Route::get('/email/verify', function () {
+        return view('auth.verify_email');
+    })->name('verification.notice');
+
+    // メール内のリンクをクリックしたときにアクセスされるもの
+    Route::get('/email/verify/{user_id}/{hash}', [VerifyEmailController::class, 'verify'])
+        ->middleware('signed') // 署名付き URL を確認
+        ->name('email.verify');
+
+    // メール認証再送信
+    Route::post('/email/resend', [VerifyEmailController::class, 'resendVerificationEmail']);
+});
+
+
+// 一般ユーザー
+Route::middleware(['verified_user'])->group(function () {
     // 出勤登録画面
     Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');

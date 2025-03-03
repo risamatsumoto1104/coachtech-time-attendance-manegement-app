@@ -17,8 +17,8 @@
                 <p class="previous-month">前月</p>
             </a>
             <form class="attendance-staff-nav-calendar"
-                action="{{ route('admin.attendance.staff.show', ['user_id' => $user->user_id]) }}" method="GET"
-                onclick="document.querySelector('.input-calendar').showPicker();">
+                action="{{ route('admin.attendance.staff.show', ['user_id' => $user->user_id, 'date' => date('Y-m', strtotime($currentDateYearMonth))]) }}"
+                method="GET" onclick="document.querySelector('.input-calendar').showPicker();">
                 <img class="nav-icon-calendar" src="{{ asset('カレンダーアイコン.png') }}" alt="カレンダーアイコン">
                 <input class="input-calendar" type="month" name="month" value="{{ $currentDateYearMonth }}"
                     onchange="this.form.submit()">
@@ -53,5 +53,16 @@
                 </tr>
             @endforeach
         </table>
+
+        <form class="form-submit-csv"
+            action="{{ route('admin.attendance.staff.export.csv', ['user_id' => $user->user_id]) }}" method="get">
+
+            {{-- クエリパラメータを hidden input として埋め込む --}}
+            @foreach (request()->query() as $key => $value)
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endforeach
+
+            <input class="submit-button" type="submit" value="CSV出力">
+        </form>
     </div>
 @endsection

@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
 
         // 各ユーザーに対して勤怠データを作成
         $users->each(function ($user) {
+            // ユーザーごとにセッションリセット
+            session()->forget('selected_dates');
+
             Attendance::factory(2)->create(['user_id' => $user->user_id]);
         });
     }
