@@ -67,11 +67,16 @@ name: 管理者
 email: admin@example.com  
 password: admin1234
 
+- 管理者ログイン：http://localhost/admin/login
+
 ---
 
 name: 一般ユーザ  
 email: それぞれの mail アドレス  
 password: password
+
+- 登録処理：http://localhost/register
+- ログイン：http://localhost/login
 
 ---
 
