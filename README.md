@@ -9,8 +9,8 @@
 2. `cd coachtech-time-attendance-manegement-app`
 3. `code .`
 4. DockerDesktop アプリを立ち上げる
-5. VScode内にて  
-    `docker-compose up -d --build`
+5. VScode 内にて  
+   `docker-compose up -d --build`
 
 **Laravel 環境構築**
 
@@ -31,12 +31,12 @@ cp .env.example .env
 4.権限の変更
 
 ```bash
-chmod -R 775 src/.env
 chown -R www-data:www-data /var/www/storage
 chmod -R 775 /var/www/storage
 ```
 
-5. .env に以下の環境変数を変更。
+5. .env に以下の環境変数を変更。  
+   ※編集できない時はコンテナを出て、`sudo chmod -R 775 src/.env`
 
 ```text
 DB_CONNECTION=mysql
