@@ -4,9 +4,13 @@
 
 **Docker ビルド**
 
-1. `git clone git@github.com:risamatsumoto1104/coachtech-time-attendance-manegement-app.git`
-2. DockerDesktop アプリを立ち上げる
-3. `docker-compose up -d --build`
+1. コマンドラインにて  
+   `git clone git@github.com:risamatsumoto1104/coachtech-time-attendance-manegement-app.git`
+2. `cd coachtech-time-attendance-manegement-app`
+3. `code .`
+4. DockerDesktop アプリを立ち上げる
+5. VScode内にて  
+    `docker-compose up -d --build`
 
 **Laravel 環境構築**
 
