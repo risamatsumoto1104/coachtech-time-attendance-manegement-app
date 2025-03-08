@@ -36,7 +36,7 @@ chmod -R 775 /var/www/storage
 ```
 
 5. .env に以下の環境変数を変更。  
-   ※編集できない時はコンテナを出て、`sudo chmod -R 775 src/.env`
+   ※編集できない時はコンテナを出て、`sudo chmod -R 777 src/.env`
 
 ```text
 DB_CONNECTION=mysql
