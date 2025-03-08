@@ -10,8 +10,4 @@ RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && composer self-update
 
-# /var/www に書き込み権限を与える
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 775 /var/www
-
 WORKDIR /var/www

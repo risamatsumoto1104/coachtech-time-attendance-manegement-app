@@ -24,7 +24,15 @@ composer install
 cp .env.example .env
 ```
 
-4. .env に以下の環境変数を変更。
+4.権限の変更
+
+```bash
+chmod -R 775 src/.env
+chown -R www-data:www-data /var/www/storage
+chmod -R 775 /var/www/storage
+```
+
+5. .env に以下の環境変数を変更。
 
 ```text
 DB_CONNECTION=mysql
@@ -44,7 +52,7 @@ MAIL_FROM_ADDRESS=test@example.com
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-5. 本番環境（.env）と、テスト環境（.env.testing）の APP_KEY= を削除。  
+6. 本番環境（.env）と、テスト環境（.env.testing）の APP_KEY= を削除。  
    新たなアプリケーションキーを作成します。  
    キャッシュの削除も行ってください。
 
@@ -54,7 +62,7 @@ php artisan key:generate --env=testing
 php artisan config:clear
 ```
 
-6. マイグレーションファイルと、ダミーデータの作成を行います。  
+7. マイグレーションファイルと、ダミーデータの作成を行います。  
    初年度でのユーザー数 1000 人達成を目標としていますが、今回は 1 名（管理者）・10 名（一般ユーザー）で作成します。
 
 ```bash
