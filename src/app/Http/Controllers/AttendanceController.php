@@ -393,8 +393,8 @@ class AttendanceController extends Controller
                     $validatedClockOut = $validated['clock_out'];
                     $validatedRemarks = $validated['remarks'];
                     foreach ($attendance->breakTimes as $index => $breakTime) {
-                        $validatedBreakStart = $validated['break_start'][$index];
-                        $validatedBreakEnd = $validated['break_end'][$index];
+                        $validatedBreakStart = $validated['break_start'][$index + 1];
+                        $validatedBreakEnd = $validated['break_end'][$index + 1];
                     }
 
                     $clockOutFormatted = (new \DateTime($validatedClockOut))->format('Y-m-d');
@@ -461,7 +461,7 @@ class AttendanceController extends Controller
 
                 DB::commit();
 
-                return redirect()->route('attendance.edit')->with('success', '勤怠データが更新されました。');
+                return redirect()->route('attendance.edit', ['user_id' => $userId, 'date' => $date])->with('success', '勤怠データが更新されました。');
             } catch (\Exception $e) {
                 DB::rollBack();
                 return back()->with('error', '更新に失敗しました。');
@@ -485,8 +485,8 @@ class AttendanceController extends Controller
                     // 休憩データを更新
                     foreach ($attendance->breakTimes as $index => $breakTime) {
                         $breakTime->update([
-                            'break_start' => $validated["break_start"][$index] ?? $breakTime->break_start,
-                            'break_end' => $validated["break_end"][$index] ?? $breakTime->break_end,
+                            'break_start' => $validated["break_start"][$index + 1] ?? $breakTime->break_start,
+                            'break_end' => $validated["break_end"][$index + 1] ?? $breakTime->break_end,
                         ]);
                     }
 
@@ -505,7 +505,7 @@ class AttendanceController extends Controller
 
                 DB::commit();
 
-                return redirect()->route('attendance.edit')->with('success', '勤怠データが更新されました。');
+                return redirect()->route('attendance.edit', ['user_id' => $userId, 'date' => $date])->with('success', '勤怠データが更新されました。');
             } catch (\Exception $e) {
                 DB::rollBack();
                 return back()->with('error', '更新に失敗しました。');

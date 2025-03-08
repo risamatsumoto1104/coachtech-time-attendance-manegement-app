@@ -44,11 +44,11 @@ class AttendanceRequest extends FormRequest
             // 出勤時間より後
             'clock_out.after' => '出勤時間もしくは退勤時間が不適切な値です。',
             // 出勤時間以降
-            'break_start.*.after_or_equal' => '休憩時間が勤務時間外です。休憩開始時刻を出勤時間以降に変更してください。',
-            'break_end.*.after_or_equal' => '休憩時間が勤務時間外です。休憩終了時刻を出勤時間以降に変更してください。',
+            'break_start.*.after_or_equal' => '休憩時間が勤務時間外です。',
+            'break_end.*.after_or_equal' => '休憩時間が勤務時間外です。',
             // 退勤時間以前
-            'break_start.*.before_or_equal' => '休憩時間が勤務時間外です。休憩開始時刻を退勤時間以前に変更してください。',
-            'break_end.*.before_or_equal' => '休憩時間が勤務時間外です。休憩終了時刻を退勤時間以前に変更してください。'
+            'break_start.*.before_or_equal' => '休憩時間が勤務時間外です。',
+            'break_end.*.before_or_equal' => '休憩時間が勤務時間外です。'
         ];
     }
 }

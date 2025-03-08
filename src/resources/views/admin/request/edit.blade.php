@@ -34,9 +34,11 @@
             <tr class="table-row">
                 <th class="table-label">出勤・退勤</th>
                 <td class="table-content">
-                    <p class="table-content-detail">9:00</p>
-                    <p class="to">～</p>
-                    <p class="table-content-detail">20:00</p>
+                    @foreach ($attendances as $attendance)
+                        <p class="table-content-detail">{{ substr($attendance->clock_in ?? '', 11, 5) }}</p>
+                        <p class="to">～</p>
+                        <p class="table-content-detail">{{ substr($attendance->clock_out ?? '', 11, 5) }}</p>
+                    @endforeach
                 </td>
             </tr>
 
@@ -66,7 +68,7 @@
 
         <div class="form-submit">
             @foreach ($attendances as $attendance)
-                @if ($stampRequest->status === 'pending')
+                @if ($stampRequest && $stampRequest->status === 'pending')
                     <form
                         action="{{ route('admin.stamp_correction_request.approve.update', ['user_id' => $userId, 'date' => $currentDateFormatted]) }}"
                         method="POST">
